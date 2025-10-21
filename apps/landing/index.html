@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>InvoWise — inteligentny asystent do faktur (beta)</title>
+  <meta name="description" content="Wrzuć fakturę PDF/JPG — InvoWise automatycznie odczyta dane, skategoryzuje wydatek i przygotuje eksport do iFirma / wFirma / Excel. Zapisz się do darmowej bety." />
+  <meta property="og:title" content="InvoWise — inteligentny asystent do faktur" />
+  <meta property="og:description" content="Automatyczne odczytywanie faktur z AI. Eksport do CSV/Excel. Zapis do bety." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://dummyimage.com/1200x630/111827/ffffff&text=InvoWise" />
+  <meta name="theme-color" content="#111827" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: rgba(255,255,255,0.06);
+      --muted: #aab0c0;
+      --text: #e8ecf8;
+      --accent: #7c6cff;
+      --accent-2: #36d3ff;
+      --ok: #22c55e;
+      --err: #ef4444;
+      --radius: 16px;
+      --shadow: 0 10px 25px rgba(0,0,0,.35);
+    }
+    html, body { height: 100%; }
+    body {
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, Noto Sans, "Apple Color Emoji", "Segoe UI Emoji";
+      background:
+        radial-gradient(1200px 600px at 10% -10%, rgba(124,108,255,.35), transparent 60%),
+        radial-gradient(1000px 500px at 90% 10%, rgba(54,211,255,.25), transparent 55%),
+        linear-gradient(180deg, #0b1020 0%, #0b0f1a 100%);
+      color: var(--text);
+      margin: 0;
+      -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+    }
+    .container { max-width: 1100px; margin: 0 auto; padding: 24px; }
+    .nav { display:flex; align-items:center; justify-content:space-between; gap:16px; padding: 8px 0; }
+    .logo { display:flex; align-items:center; gap:12px; font-weight:800; letter-spacing:.2px; }
+    .logo-mark { width:36px; height:36px; display:grid; place-items:center; border-radius:10px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); box-shadow: var(--shadow); }
+    .chip { font-size: 12px; padding:6px 10px; border-radius:999px; background: var(--panel); color: var(--muted); border:1px solid rgba(255,255,255,.06); }
+
+    .grid-hero { display:grid; grid-template-columns: 1.05fr .95fr; gap:36px; align-items:center; }
+    @media (max-width: 900px){ .grid-hero { grid-template-columns: 1fr; } }
+
+    .card { background: var(--panel); border:1px solid rgba(255,255,255,.08); border-radius: var(--radius); box-shadow: var(--shadow); }
+    .hero { padding: 28px; }
+    h1 { font-size: clamp(28px, 4vw, 42px); line-height: 1.07; margin: 10px 0 14px; }
+    .lead { color: var(--muted); font-size: clamp(16px, 2vw, 18px); }
+
+    .form { margin-top: 18px; display:flex; gap:10px; flex-wrap:wrap; }
+    input[type=email]{
+      flex:1 1 280px; min-width: 220px; padding:14px 16px; border-radius: 12px; border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.04); color:var(--text); outline:none;
+    }
+    input[type=email]::placeholder{ color:#9aa2b5; }
+    button.primary{ padding:14px 18px; border:0; border-radius:12px; font-weight:700; cursor:pointer; color:#0b1020;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2)); box-shadow: 0 8px 22px rgba(124,108,255,.35);
+    }
+    .hint { font-size:12px; color:#91a0b8; margin-top:8px; }
+
+    .screen { aspect-ratio: 16/10; background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02));
+      border:1px solid rgba(255,255,255,.1); border-radius: 18px; display:grid; place-items:center; position:relative; overflow:hidden; }
+    .screen::after{ content:"Podgląd wkrótce"; color:#c7d2fe; letter-spacing:.4px; font-weight:600; opacity:.8; }
+
+    .features { display:grid; grid-template-columns: repeat(3,1fr); gap:18px; margin-top:26px; }
+    @media (max-width: 900px){ .features { grid-template-columns:1fr; } }
+    .feat { padding:18px; display:grid; gap:8px; }
+    .feat h3{ margin:0; font-size:18px; }
+    .feat p{ margin:0; color:var(--muted); font-size:14px; }
+
+    .how { margin-top: 34px; display:grid; grid-template-columns: repeat(3,1fr); gap:18px; }
+    @media (max-width: 900px){ .how { grid-template-columns:1fr; } }
+    .step { padding:18px; }
+    .num { width:32px; height:32px; border-radius:10px; display:grid; place-items:center; background: rgba(124,108,255,.25); border:1px solid rgba(124,108,255,.4); font-weight:700; }
+
+    .faq { margin: 44px 0 26px; }
+    details { background: var(--panel); border:1px solid rgba(255,255,255,.08); border-radius:14px; padding:14px 16px; margin-bottom:10px; }
+    summary { font-weight:600; cursor:pointer; }
+    details p { color: var(--muted); }
+
+    .notice { margin-top: 16px; font-size: 14px; }
+    .success{ color: var(--ok); }
+    .error{ color: var(--err); }
+
+    .footer { opacity:.8; font-size: 13px; color:#9aa2b5; display:flex; flex-wrap:wrap; align-items:center; gap:10px; justify-content:space-between; padding: 22px 0 10px; }
+    .links a{ color:#cbd5e1; text-decoration: none; border-bottom: 1px dashed rgba(203,213,225,.4); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav class="nav">
+      <div class="logo">
+        <div class="logo-mark" aria-hidden="true">
+          <!-- simple spark icon -->
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M12 2l2.2 5.9L20 10l-5.8 2.1L12 18l-2.2-5.9L4 10l5.8-2.1L12 2z" fill="white"/>
+          </svg>
+        </div>
+        InvoWise
+        <span class="chip">beta prywatna</span>
+      </div>
+      <div class="links">
+        <a href="#faq">FAQ</a>
+      </div>
+    </nav>
+
+    <section class="grid-hero">
+      <div class="card hero">
+        <h1>Inteligentny asystent do faktur.<br />Mniej klikania, mniej błędów.</h1>
+        <p class="lead">Wrzuć fakturę PDF/JPG — InvoWise automatycznie odczyta pola (NIP, daty, pozycje, VAT), zasugeruje kategorię i przygotuje eksport do iFirma/wFirma/Excel. Zapisy do bety ruszyły.</p>
+
+        <form id="signup" class="form" aria-label="Zapisz się do bety">
+          <!-- Replace with your Formspree / MailerLite action endpoint -->
+          <input type="email" id="email" name="email" placeholder="Twój e‑mail" autocomplete="email" required />
+          <!-- bot field (honeypot) -->
+          <input type="text" name="company" tabindex="-1" autocomplete="off" style="display:none" aria-hidden="true" />
+          <button class="primary" type="submit">Zapisz mnie</button>
+        </form>
+        <div id="notice" class="notice" role="status" aria-live="polite"></div>
+        <p class="hint">Bez spamu. Wyślemy tylko zaproszenie, gdy uruchomimy betę.</p>
+
+        <div class="features">
+          <div class="card feat">
+            <h3>⏱ Szybko</h3>
+            <p>Automatyczny odczyt pól faktury, podgląd i korekta jednym kliknięciem.</p>
+          </div>
+          <div class="card feat">
+            <h3>🧠 Mądrze</h3>
+            <p>AI uczy się Twoich kategorii kosztów i dostawców z czasem.</p>
+          </div>
+          <div class="card feat">
+            <h3>📤 Gotowe eksporty</h3>
+            <p>CSV/Excel pod popularne systemy księgowe w Polsce + API (wkrótce).</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="screen card" aria-hidden="true"></div>
+    </section>
+
+    <section class="how">
+      <div class="card step">
+        <div class="num">1</div>
+        <h3>Dodaj dokument</h3>
+        <p class="lead">Przeciągnij PDF/JPG lub wyślij na indywidualny adres e‑mail.</p>
+      </div>
+      <div class="card step">
+        <div class="num">2</div>
+        <h3>Sprawdź i zatwierdź</h3>
+        <p class="lead">Podgląd z podświetleniem wykrytych pól. Szybka korekta.</p>
+      </div>
+      <div class="card step">
+        <div class="num">3</div>
+        <h3>Eksportuj</h3>
+        <p class="lead">Pobierz CSV/Excel dopasowany do Twojej księgowości lub użyj API.</p>
+      </div>
+    </section>
+
+    <section id="faq" class="faq">
+      <h2>FAQ</h2>
+      <details>
+        <summary>Czy muszę zmieniać system księgowy?</summary>
+        <p>Nie. InvoWise generuje eksporty (CSV/Excel), które wgrasz do popularnych systemów (iFirma, wFirma, Infakt). Integracje API planujemy po starcie.</p>
+      </details>
+      <details>
+        <summary>Gdzie przechowywane są dane?</summary>
+        <p>W chmurze w regionie UE. Pliki są szyfrowane w spoczynku i w tranzycie. Masz pełną kontrolę retencji dokumentów.</p>
+      </details>
+      <details>
+        <summary>Ile to będzie kosztować?</summary>
+        <p>Plan darmowy na start. Płatne plany od ~19 zł/mies. dla JDG. Ceny podamy przy starcie bety.</p>
+      </details>
+      <details>
+        <summary>Jak szybko mogę zacząć?</summary>
+        <p>Zapisy do bety już działają. Po uruchomieniu wyślemy zaproszenia falami — im wcześniej się zapiszesz, tym szybciej dostaniesz dostęp.</p>
+      </details>
+    </section>
+
+    <footer class="footer">
+      <div>© <span id="year"></span> InvoWise — projekt beta.</div>
+      <div class="links">Kontakt: <a href="mailto:hello@invo-wise.app">hello@invo-wise.app</a></div>
+    </footer>
+  </div>
+
+  <script>
+    // dynamic year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // simple async submit handler — replace endpoint to connect a real ESP
+    const form = document.getElementById('signup');
+    const notice = document.getElementById('notice');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      notice.textContent = 'Wysyłanie…';
+      notice.className = 'notice';
+
+      // Honeypot trap
+      const bot = form.querySelector('[name="company"]').value;
+      if (bot) { return; }
+
+      const email = form.email.value.trim();
+      if (!email) { return; }
+
+      try {
+        // ⚠️ Podmień na swój endpoint (np. Formspree / MailerLite webhook)
+        const ENDPOINT = 'https://formspree.io/f/your-id-here';
+        const res = await fetch(ENDPOINT, {
+          method: 'POST',
+          headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+
+        if (res.ok) {
+          notice.innerHTML = 'Dziękujemy! Sprawdzaj skrzynkę — zaprosimy Cię do bety.';
+          notice.className = 'notice success';
+          form.reset();
+        } else {
+          throw new Error('Błąd sieci');
+        }
+      } catch (err) {
+        notice.textContent = 'Ups! Coś poszło nie tak. Spróbuj ponownie.';
+        notice.className = 'notice error';
+      }
+    });
+  </script>
+</body>
+</html>
