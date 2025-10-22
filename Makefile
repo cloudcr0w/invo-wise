@@ -1,21 +1,16 @@
-.PHONY: api dev test fmt
-
+.PHONY: api dev test fmt venv api-deps
 
 api:
-cd services/api && uvicorn main:app --reload --host $$API_HOST --port $$API_PORT
-
+	@uvicorn services.api.main:app --reload --host $(API_HOST) --port $(API_PORT) --reload-dir services/api
 
 venv:
-python3 -m venv .venv && . .venv/bin/activate && pip install --upgrade pip
-
+	@python3 -m venv .venv && . .venv/bin/activate && pip install --upgrade pip
 
 api-deps:
-. .venv/bin/activate && pip install -r services/api/requirements.txt
-
+	@. .venv/bin/activate && pip install -r services/api/requirements.txt
 
 fmt:
-. .venv/bin/activate && python -m pip install ruff black && ruff format services/api && black services/api
-
+	@. .venv/bin/activate && python -m pip install ruff black && ruff format services/api && black services/api
 
 test:
-@echo "(tests will go here)"
+	@echo "(tests will go here)"
