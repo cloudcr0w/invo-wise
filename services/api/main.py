@@ -66,6 +66,13 @@ async def create_from_text(body: InvoiceCreateRequest):
 @app.post("/upload")
 async def upload(file: UploadFile = File(...)):
     # Week 1: accept file, read text very naively (no OCR yet)
+    # services/api/main.py – dopisz na górze endpointu /upload:
+    if not file.filename.lower().endswith((".pdf", ".jpg", ".jpeg", ".png", ".txt")):
+        raise HTTPException(status_code=400, detail="Unsupported file type")
+    if len(await file.read()) > 2_000_000:
+        raise HTTPException(status_code=400, detail="File too large (max 2MB)")
+    await file.seek(0)
+
     content = await file.read()
     try:
         text = content.decode("utf-8", errors="ignore")
