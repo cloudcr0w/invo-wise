@@ -1,5 +1,9 @@
+from pathlib import Path
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from uuid import uuid4
 
@@ -10,6 +14,22 @@ from .parsers.pl_invoice import parse_text_to_fields
 
 app = FastAPI(title="InvoWise API", version="0.1.0")
 
+from pathlib import Path
+from fastapi.staticfiles import StaticFiles
+
+BASE_DIR = Path(__file__).resolve().parents[2]  # repo root
+STATIC_DIR = BASE_DIR / "apps" / "landing"
+print("STATIC_DIR:", STATIC_DIR, "exists:", STATIC_DIR.exists())
+
+app.mount("/web", StaticFiles(directory=str(STATIC_DIR), html=True), name="web")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*",],  
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 class InvoiceCreateRequest(BaseModel):
     raw_text: str
@@ -17,7 +37,7 @@ class InvoiceCreateRequest(BaseModel):
 
 @app.get("/health")
 async def health():
-    return {"ok": True}
+    return {"ok": True, "invoices": len(list_invoices())}
 
 
 @app.get("/invoices")
