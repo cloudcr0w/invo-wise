@@ -3,7 +3,7 @@ __pycache__/
 *.pyc
 .venv/
 .env
-
+*.log
 
 # node/web
 node_modules/
