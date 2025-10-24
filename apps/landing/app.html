@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>InvoWise — podgląd (dev)</title>
+  <style>
+    body { font-family: ui-sans-serif, system-ui, Arial; margin: 24px; background: #0b1020; color: #e8ecf8; }
+    .card { background: rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1); border-radius: 12px; padding:16px; margin-bottom:16px; }
+    input, button { padding: 10px 12px; border-radius: 10px; border:1px solid rgba(255,255,255,.2); background: rgba(255,255,255,.05); color:#e8ecf8;}
+    button { cursor: pointer; }
+    table { width:100%; border-collapse: collapse; }
+    th, td { padding:10px; border-bottom:1px solid rgba(255,255,255,.1); text-align:left; }
+    .muted { opacity:.8; }
+    .ok { color:#22c55e; }
+    .err { color:#ef4444; }
+    code { background: rgba(0,0,0,.25); padding:2px 6px; border-radius:6px; }
+  </style>
+</head>
+<body>
+  <h1>InvoWise — podgląd (dev)</h1>
+  <p class="muted">Minimalny frontend do testu API lokalnie. Najpierw uruchom backend: <code>make api</code></p>
+
+  <div class="card">
+    <h3>Status API</h3>
+    <p id="status">Sprawdzanie…</p>
+  </div>
+
+  <div class="card">
+    <h3>Upload faktury</h3>
+    <form id="upload-form">
+      <input type="file" id="file" name="file" accept=".pdf,.jpg,.jpeg,.png,.txt" required />
+      <button type="submit">Wyślij</button>
+      <span id="upload-msg" class="muted"></span>
+    </form>
+  </div>
+
+  <div class="card">
+    <h3>Lista faktur</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>NIP (sprzedawca)</th>
+          <th>Plik</th>
+          <th>Kwota brutto</th>
+          <th>Pewność</th>
+        </tr>
+      </thead>
+      <tbody id="invoices-body">
+        <tr><td colspan="5" class="muted">Brak danych…</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    // bazowy adres API (lokalnie uvicorn)
+    const API_BASE = "http://127.0.0.1:8000";
+
+    const statusEl = document.getElementById("status");
+    const tbody = document.getElementById("invoices-body");
+    const uploadForm = document.getElementById("upload-form");
+    const uploadMsg = document.getElementById("upload-msg");
+
+    async function health() {
+      try {
+        const res = await fetch(`${API_BASE}/health`);
+        const json = await res.json();
+        statusEl.innerHTML = json.ok ? `✅ OK (faktur: ${json.invoices ?? "?"})` : "❌ Błąd";
+        statusEl.className = json.ok ? "ok" : "err";
+      } catch (e) {
+        statusEl.textContent = "❌ API niedostępne (sprawdź make api)";
+        statusEl.className = "err";
+      }
+    }
+
+    async function listInvoices() {
+      try {
+        const res = await fetch(`${API_BASE}/invoices`);
+        const data = await res.json();
+        if (!Array.isArray(data) || data.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="5" class="muted">Brak danych…</td></tr>`;
+          return;
+        }
+        tbody.innerHTML = data.map(inv => `
+          <tr>
+            <td><code>${inv.invoice_id}</code></td>
+            <td>${inv.issuer?.nip || "-"}</td>
+            <td>${inv.file_uri || "-"}</td>
+            <td>${inv.totals?.gross ?? "-"}</td>
+            <td>${(inv.confidence ?? 0).toFixed(2)}</td>
+          </tr>
+        `).join("");
+      } catch (e) {
+        tbody.innerHTML = `<tr><td colspan="5" class="err">Błąd pobierania listy</td></tr>`;
+      }
+    }
+
+    uploadForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      uploadMsg.textContent = "Wysyłanie…";
+      const file = document.getElementById("file").files[0];
+      const fd = new FormData();
+      fd.append("file", file);
+
+      try {
+        const res = await fetch(`${API_BASE}/upload`, { method: "POST", body: fd });
+        if (!res.ok) {
+          const errJson = await res.json().catch(() => ({}));
+          throw new Error(errJson.detail || `HTTP ${res.status}`);
+        }
+        const json = await res.json();
+        uploadMsg.textContent = "Gotowe ✅";
+        await listInvoices();
+      } catch (err) {
+        uploadMsg.textContent = `Błąd: ${err.message}`;
+      }
+    });
+
+    // init
+    health().then(listInvoices);
+  </script>
+</body>
+</html>
