@@ -15,3 +15,13 @@ Landing: open `apps/landing/index.html` in your browser (or host via GitHub Page
 - Local FastAPI with endpoints: /health, /invoices (CRUD mock), /upload (stub)
 - Simple in-memory storage (later S3 + Postgres)
 - Parser stub for PL invoices (regex for NIP, dates) — to be expanded
+
+##  Dev UI (local testing)
+
+To quickly test the backend without Postman, open the lightweight HTML dev UI:
+
+```bash
+make api
+```
+
+Then upload any .pdf, .jpg, .png, or .txt file — results are stored in-memory and visible in the table below.
