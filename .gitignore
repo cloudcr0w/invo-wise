@@ -15,3 +15,7 @@ dist/
 .DS_Store
 .idea/
 .vscode/
+
+venv/
+.env.local
+.env.development.local
