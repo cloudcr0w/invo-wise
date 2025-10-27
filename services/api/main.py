@@ -120,3 +120,28 @@ async def upload(file: UploadFile = File(...)):
     )
     save_invoice(inv)
     return inv.model_dump()
+
+import io, csv
+from fastapi.responses import StreamingResponse
+
+
+@app.get("/export/csv")
+async def export_csv():
+    invoices = list_invoices()
+    if not invoices:
+        raise HTTPException(status_code=404, detail="No invoices to export")
+
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["invoice_id", "nip", "file_uri", "gross", "confidence"])
+    for inv in invoices:
+        writer.writerow([
+            inv.invoice_id,
+            inv.issuer.get("nip", ""),
+            inv.file_uri or "",
+            inv.totals.gross,
+            inv.confidence,
+        ])
+    output.seek(0)
+    headers = {"Content-Disposition": "attachment; filename=invoices.csv"}
+    return StreamingResponse(output, media_type="text/csv", headers=headers)
