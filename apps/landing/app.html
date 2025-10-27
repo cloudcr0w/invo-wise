@@ -109,6 +109,10 @@
             </tbody>
         </table>
     </div>
+    <div style="margin-top:14px;">
+        <button id="export-btn">📤 Eksportuj CSV</button>
+        <span id="export-msg" class="muted"></span>
+    </div>
 
     <script>
         // bazowy adres API (lokalnie uvicorn)
@@ -171,6 +175,25 @@
                 await listInvoices();
             } catch (err) {
                 uploadMsg.textContent = `Błąd: ${err.message}`;
+            }
+        });
+        const exportBtn = document.getElementById("export-btn");
+        const exportMsg = document.getElementById("export-msg");
+
+        exportBtn.addEventListener("click", async () => {
+            exportMsg.textContent = "Generowanie…";
+            try {
+                const res = await fetch(`${API_BASE}/export/csv`);
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const blob = await res.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = "invoices.csv";
+                a.click();
+                exportMsg.textContent = "Gotowe ✅";
+            } catch (err) {
+                exportMsg.textContent = "Błąd eksportu ❌";
             }
         });
 
