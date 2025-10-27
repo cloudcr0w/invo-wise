@@ -13,6 +13,8 @@ from .parsers.pl_invoice import parse_text_to_fields
 
 
 app = FastAPI(title="InvoWise API", version="0.1.0")
+print("🚀 InvoWise API running — open http://127.0.0.1:8000/web/app.html for dev UI")
+
 
 from pathlib import Path
 from fastapi.staticfiles import StaticFiles
