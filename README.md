@@ -25,3 +25,15 @@ make api
 ```
 
 Then upload any .pdf, .jpg, .png, or .txt file — results are stored in-memory and visible in the table below.
+
+### 🚀 Quickstart
+
+Create virtualenv and install dependencies:
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install -r services/api/requirements.txt
+make api
+```
+
+The API will run at http://127.0.0.1:8000
