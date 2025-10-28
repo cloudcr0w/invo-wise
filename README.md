@@ -37,3 +37,11 @@ make api
 ```
 
 The API will run at http://127.0.0.1:8000
+
+### 📡 API Endpoints
+
+- `GET /health` – health check  
+- `GET /invoices` – list invoices  
+- `POST /upload` – upload a file  
+- `GET /export/csv` – download all invoices as CSV  
+- `GET /version` – API version info
