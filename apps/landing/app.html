@@ -109,6 +109,12 @@
             </tbody>
         </table>
     </div>
+    <div class="card">
+        <h3>📊 Szybkie statystyki</h3>
+        <button id="refresh-analytics" type="button">Odśwież</button>
+        <div id="analytics" class="muted" style="margin-top:8px">–</div>
+    </div>
+
     <div style="margin-top:14px;">
         <button id="export-btn">📤 Eksportuj CSV</button>
         <span id="export-msg" class="muted"></span>
@@ -199,6 +205,24 @@
 
         // init
         health().then(listInvoices);
+        const analyticsBox = document.getElementById("analytics");
+        const refreshBtn = document.getElementById("refresh-analytics");
+
+        async function loadAnalytics() {
+            try {
+                const res = await fetch(`${API_BASE}/analytics`);
+                const a = await res.json();
+                analyticsBox.innerHTML = `
+      Faktur: <b>${a.total_invoices}</b> · Suma brutto: <b>${a.total_gross}</b> ·
+      Śr. pewność: <b>${a.avg_confidence}</b>
+    `;
+            } catch {
+                analyticsBox.textContent = "Błąd pobierania statystyk";
+            }
+        }
+        refreshBtn.addEventListener("click", loadAnalytics);
+        health().then(() => { listInvoices(); loadAnalytics(); });
+
     </script>
 </body>
 
