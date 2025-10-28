@@ -147,3 +147,7 @@ async def export_csv():
     output.seek(0)
     headers = {"Content-Disposition": "attachment; filename=invoices.csv"}
     return StreamingResponse(output, media_type="text/csv", headers=headers)
+
+@app.get("/version")
+async def version():
+    return {"version": "0.1.0", "env": "dev"}
