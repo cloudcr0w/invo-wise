@@ -151,3 +151,18 @@ async def export_csv():
 @app.get("/version")
 async def version():
     return {"version": "0.1.0", "env": "dev"}
+
+@app.get("/analytics")
+async def analytics():
+    """
+    Placeholder endpoint for invoice analytics.
+    In the future: aggregate total net, VAT, and gross sums.
+    """
+    sample = {
+        "total_invoices": len(list_invoices()),
+        "total_gross": sum(inv.totals.gross for inv in list_invoices()),
+        "avg_confidence": round(
+            sum(inv.confidence for inv in list_invoices()) / max(1, len(list_invoices())), 2
+        ),
+    }
+    return sample
