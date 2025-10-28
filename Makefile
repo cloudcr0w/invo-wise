@@ -14,3 +14,9 @@ fmt:
 
 test:
 	@echo "(tests will go here)"
+
+help:
+	@echo "Available commands:"
+	@echo "  make api        Run FastAPI locally"
+	@echo "  make test       Run tests (if present)"
+	@echo "  make fmt        Format code"
