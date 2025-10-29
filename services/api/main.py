@@ -88,7 +88,7 @@ async def create_from_text(body: InvoiceCreateRequest):
 @app.post("/upload")
 async def upload(file: UploadFile = File(...)):
     # Week 1: accept file, read text very naively (no OCR yet)
-    # services/api/main.py – dopisz na górze endpointu /upload:
+    # services/api/main.py – dopisz na górze endpointu /upload: 
     if not file.filename.lower().endswith((".pdf", ".jpg", ".jpeg", ".png", ".txt")):
         raise HTTPException(status_code=400, detail="Unsupported file type")
     if len(await file.read()) > 2_000_000:
@@ -166,3 +166,24 @@ async def analytics():
         ),
     }
     return sample
+@app.get("/summary/{invoice_id}")
+async def invoice_summary(invoice_id: str):
+    """
+    Mock: AI summary – opis wydatku i kategoria kosztu.
+    (W przyszłości: wywołanie modelu LLM z AWS Bedrock / OpenAI.)
+    """
+    inv = get_invoice(invoice_id)
+    if not inv:
+        raise HTTPException(status_code=404, detail="Invoice not found")
+
+    issuer = inv.issuer.get("nip", "nieznany NIP")
+    total = inv.totals.gross
+    category = "usługi IT" if total > 100 else "materiały biurowe"
+    summary = f"Faktura od {issuer} na kwotę {total} zł dotyczy prawdopodobnie kategorii: {category}."
+
+    return {
+        "invoice_id": inv.invoice_id,
+        "category": category,
+        "summary": summary,
+        "confidence": inv.confidence,
+    }
