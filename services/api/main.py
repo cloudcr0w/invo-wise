@@ -187,3 +187,31 @@ async def invoice_summary(invoice_id: str):
         "summary": summary,
         "confidence": inv.confidence,
     }
+@app.get("/summary/{invoice_id}")
+async def invoice_summary(invoice_id: str):
+    """
+    Mock AI summary – kategoryzacja i krótki opis.
+    TODO: podpiąć prawdziwe LLM (Bedrock/OpenAI), prompt z kontekstem (NIP, pozycje, kwoty).
+    """
+    inv = get_invoice(invoice_id)
+    if not inv:
+        raise HTTPException(status_code=404, detail="Invoice not found")
+
+    issuer_nip = (inv.issuer or {}).get("nip") or "NIP nieznany"
+    total = inv.totals.gross
+    # bardzo prosta reguła pod demo; jutro zamienimy na LLM
+    if total >= 500:
+        category = "usługi IT"
+    elif total >= 100:
+        category = "media/operacyjne"
+    else:
+        category = "materiały biurowe"
+
+    summary = f"Faktura od {issuer_nip} na {total} zł – kategoria: {category} (auto)."
+
+    return {
+        "invoice_id": inv.invoice_id,
+        "category": category,
+        "summary": summary,
+        "confidence": inv.confidence,
+    }
