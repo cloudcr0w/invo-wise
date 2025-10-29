@@ -1,156 +1,151 @@
 <!doctype html>
 <html lang="pl">
-
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>InvoWise — podgląd (dev)</title>
-    <style>
-        body {
-            font-family: ui-sans-serif, system-ui, Arial;
-            margin: 24px;
-            background: #0b1020;
-            color: #e8ecf8;
-        }
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>InvoWise — podgląd (dev)</title>
+  <style>
+    body {
+      font-family: ui-sans-serif, system-ui, Arial;
+      margin: 24px;
+      background: #0b1020;
+      color: #e8ecf8;
+    }
+    .card {
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    input, button {
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,.2);
+      background: rgba(255,255,255,.05);
+      color: #e8ecf8;
+    }
+    button[type="submit"]:hover {
+      filter: brightness(1.1);
+      transform: scale(1.03);
+      transition: .2s;
+    }
+    button { cursor: pointer; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid rgba(255,255,255,.1);
+      text-align: left;
+    }
+    /* clickable rows */
+    tr.inv-row { cursor: pointer; }
+    tr.inv-row:hover { background: rgba(255,255,255,.04); }
 
-        .card {
-            background: rgba(255, 255, 255, .06);
-            border: 1px solid rgba(255, 255, 255, .1);
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 16px;
-        }
-
-        input,
-        button {
-            padding: 10px 12px;
-            border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, .2);
-            background: rgba(255, 255, 255, .05);
-            color: #e8ecf8;
-        }
-
-        button[type="submit"]:hover {
-            filter: brightness(1.1);
-            transform: scale(1.03);
-            transition: .2s;
-        }
-
-        button {
-            cursor: pointer;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th,
-        td {
-            padding: 10px;
-            border-bottom: 1px solid rgba(255, 255, 255, .1);
-            text-align: left;
-        }
-
-        .muted {
-            opacity: .8;
-        }
-
-        .ok {
-            color: #22c55e;
-        }
-
-        .err {
-            color: #ef4444;
-        }
-
-        code {
-            background: rgba(0, 0, 0, .25);
-            padding: 2px 6px;
-            border-radius: 6px;
-        }
-    </style>
+    .muted { opacity: .8; }
+    .ok { color: #22c55e; }
+    .err { color: #ef4444; }
+    code { background: rgba(0,0,0,.25); padding: 2px 6px; border-radius: 6px; }
+  </style>
 </head>
-
 <body>
-    <h1>InvoWise — podgląd (dev)</h1>
-    <p class="muted">Minimalny frontend do testu API lokalnie. Najpierw uruchom backend: <code>make api</code></p>
+  <h1>InvoWise — podgląd (dev)</h1>
+  <p class="muted">Minimalny frontend do testu API lokalnie. Najpierw uruchomić backend: <code>make api</code></p>
 
-    <div class="card">
-        <h3>Status API</h3>
-        <p id="status">Sprawdzanie…</p>
-    </div>
+  <div class="card">
+    <h3>Status API</h3>
+    <p id="status">Sprawdzanie…</p>
+  </div>
 
-    <div class="card">
-        <h3>Upload faktury</h3>
-        <form id="upload-form">
-            <input type="file" id="file" name="file" accept=".pdf,.jpg,.jpeg,.png,.txt" required />
-            <button type="submit">Wyślij</button>
-            <span id="upload-msg" class="muted"></span>
-        </form>
-    </div>
+  <div class="card">
+    <h3>Upload faktury</h3>
+    <form id="upload-form">
+      <input type="file" id="file" name="file" accept=".pdf,.jpg,.jpeg,.png,.txt" required />
+      <button type="submit">Wyślij</button>
+      <span id="upload-msg" class="muted"></span>
+    </form>
+  </div>
 
-    <div class="card">
-        <h3>Lista faktur</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>NIP (sprzedawca)</th>
-                    <th>Plik</th>
-                    <th>Kwota brutto</th>
-                    <th>Pewność</th>
-                </tr>
-            </thead>
-            <tbody id="invoices-body">
-                <tr>
-                    <td colspan="5" class="muted">Brak danych…</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-    <div class="card">
-        <h3>📊 Szybkie statystyki</h3>
-        <button id="refresh-analytics" type="button">Odśwież</button>
-        <div id="analytics" class="muted" style="margin-top:8px">–</div>
-    </div>
+  <div class="card">
+    <h3>Lista faktur</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>NIP (sprzedawca)</th>
+          <th>Plik</th>
+          <th>Kwota brutto</th>
+          <th>Pewność</th>
+        </tr>
+      </thead>
+      <tbody id="invoices-body">
+        <tr><td colspan="5" class="muted">Brak danych…</td></tr>
+      </tbody>
+    </table>
+  </div>
 
-    <div style="margin-top:14px;">
-        <button id="export-btn">📤 Eksportuj CSV</button>
-        <span id="export-msg" class="muted"></span>
-    </div>
+  <div class="card" id="detail-card" style="display:none">
+    <h3>🔎 Szczegóły faktury</h3>
+    <pre id="detail-json" style="white-space:pre-wrap; margin:0;"></pre>
+  </div>
 
-    <script>
-        // bazowy adres API (lokalnie uvicorn)
-        const API_BASE = "http://127.0.0.1:8000";
+  <div class="card" id="ai-card" style="display:none">
+    <h3>🧠 AI summary</h3>
+    <p id="ai-summary" class="muted"></p>
+  </div>
 
-        const statusEl = document.getElementById("status");
-        const tbody = document.getElementById("invoices-body");
-        const uploadForm = document.getElementById("upload-form");
-        const uploadMsg = document.getElementById("upload-msg");
+  <div class="card">
+    <h3>📊 Szybkie statystyki</h3>
+    <button id="refresh-analytics" type="button">Odśwież</button>
+    <div id="analytics" class="muted" style="margin-top:8px">–</div>
+  </div>
 
-        async function health() {
-            try {
-                const res = await fetch(`${API_BASE}/health`);
-                const json = await res.json();
-                statusEl.innerHTML = json.ok ? `✅ OK (faktur: ${json.invoices ?? "?"})` : "❌ Błąd";
-                statusEl.className = json.ok ? "ok" : "err";
-            } catch (e) {
-                statusEl.textContent = "❌ API niedostępne (sprawdź make api)";
-                statusEl.className = "err";
-            }
+  <div style="margin-top:14px;">
+    <button id="export-btn">📤 Eksportuj CSV</button>
+    <span id="export-msg" class="muted"></span>
+  </div>
+
+  <script>
+    // base API (local uvicorn)
+    const API_BASE = "http://127.0.0.1:8000";
+
+    // refs
+    const statusEl = document.getElementById("status");
+    const tbody = document.getElementById("invoices-body");
+    const uploadForm = document.getElementById("upload-form");
+    const uploadMsg = document.getElementById("upload-msg");
+    const detailCard = document.getElementById("detail-card");
+    const detailJson = document.getElementById("detail-json");
+    const aiCard = document.getElementById("ai-card");      // reserved for next step
+    const aiSummary = document.getElementById("ai-summary"); // reserved for next step
+    const analyticsBox = document.getElementById("analytics");
+    const refreshBtn = document.getElementById("refresh-analytics");
+    const exportBtn = document.getElementById("export-btn");
+    const exportMsg = document.getElementById("export-msg");
+
+    // health
+    async function health() {
+      try {
+        const res = await fetch(`${API_BASE}/health`);
+        const json = await res.json();
+        statusEl.innerHTML = json.ok ? `✅ OK (faktur: ${json.invoices ?? "?"})` : "❌ Błąd";
+        statusEl.className = json.ok ? "ok" : "err";
+      } catch {
+        statusEl.textContent = "❌ API niedostępne (sprawdź make api)";
+        statusEl.className = "err";
+      }
+    }
+
+    // list + row click → detail
+    async function listInvoices() {
+      try {
+        const res = await fetch(`${API_BASE}/invoices`);
+        const data = await res.json();
+        if (!Array.isArray(data) || data.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="5" class="muted">Brak danych…</td></tr>`;
+          return;
         }
-
-        async function listInvoices() {
-            try {
-                const res = await fetch(`${API_BASE}/invoices`);
-                const data = await res.json();
-                if (!Array.isArray(data) || data.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="5" class="muted">Brak danych…</td></tr>`;
-                    return;
-                }
-                tbody.innerHTML = data.map(inv => `
-          <tr>
+        tbody.innerHTML = data.map(inv => `
+          <tr data-id="${inv.invoice_id}" class="inv-row">
             <td><code>${inv.invoice_id}</code></td>
             <td>${inv.issuer?.nip || "-"}</td>
             <td>${inv.file_uri || "-"}</td>
@@ -158,72 +153,100 @@
             <td>${(inv.confidence ?? 0).toFixed(2)}</td>
           </tr>
         `).join("");
-            } catch (e) {
-                tbody.innerHTML = `<tr><td colspan="5" class="err">Błąd pobierania listy</td></tr>`;
-            }
-        }
 
-        uploadForm.addEventListener("submit", async (e) => {
-            e.preventDefault();
-            uploadMsg.textContent = "Wysyłanie…";
-            const file = document.getElementById("file").files[0];
-            const fd = new FormData();
-            fd.append("file", file);
-
+        // bind detail fetchers
+        for (const tr of document.querySelectorAll(".inv-row")) {
+          tr.addEventListener("click", async () => {
+            const id = tr.getAttribute("data-id");
+            detailJson.textContent = "Ładowanie…";
+            detailCard.style.display = "block";
             try {
-                const res = await fetch(`${API_BASE}/upload`, { method: "POST", body: fd });
-                if (!res.ok) {
-                    const errJson = await res.json().catch(() => ({}));
-                    throw new Error(errJson.detail || `HTTP ${res.status}`);
-                }
-                const json = await res.json();
-                uploadMsg.textContent = "Gotowe ✅";
-                await listInvoices();
-            } catch (err) {
-                uploadMsg.textContent = `Błąd: ${err.message}`;
-            }
-        });
-        const exportBtn = document.getElementById("export-btn");
-        const exportMsg = document.getElementById("export-msg");
+              const res = await fetch(`${API_BASE}/invoices/${id}`);
+              if (!res.ok) throw new Error(`HTTP ${res.status}`);
+              const json = await res.json();
+              detailJson.textContent = JSON.stringify(json, null, 2);
+              detailCard.scrollIntoView({ behavior: "smooth", block: "start" });
 
-        exportBtn.addEventListener("click", async () => {
-            exportMsg.textContent = "Generowanie…";
-            try {
-                const res = await fetch(`${API_BASE}/export/csv`);
-                if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                const blob = await res.blob();
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement("a");
-                a.href = url;
-                a.download = "invoices.csv";
-                a.click();
-                exportMsg.textContent = "Gotowe ✅";
-            } catch (err) {
-                exportMsg.textContent = "Błąd eksportu ❌";
-            }
-        });
+              // AI summary to be added in a separate commit (kept off for now)
+              // const res2 = await fetch(`${API_BASE}/summary/${id}`);
+              // if (res2.ok) {
+              //   const s = await res2.json();
+              //   aiSummary.textContent = s.summary;
+              //   aiCard.style.display = "block";
+              // }
 
-        // init
-        health().then(listInvoices);
-        const analyticsBox = document.getElementById("analytics");
-        const refreshBtn = document.getElementById("refresh-analytics");
-
-        async function loadAnalytics() {
-            try {
-                const res = await fetch(`${API_BASE}/analytics`);
-                const a = await res.json();
-                analyticsBox.innerHTML = `
-      Faktur: <b>${a.total_invoices}</b> · Suma brutto: <b>${a.total_gross}</b> ·
-      Śr. pewność: <b>${a.avg_confidence}</b>
-    `;
             } catch {
-                analyticsBox.textContent = "Błąd pobierania statystyk";
+              detailJson.textContent = "Błąd pobierania szczegółów.";
             }
+          });
         }
-        refreshBtn.addEventListener("click", loadAnalytics);
-        health().then(() => { listInvoices(); loadAnalytics(); });
+      } catch {
+        tbody.innerHTML = `<tr><td colspan="5" class="err">Błąd pobierania listy</td></tr>`;
+      }
+    }
 
-    </script>
+    // upload
+    uploadForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      uploadMsg.textContent = "Wysyłanie…";
+      const file = document.getElementById("file").files[0];
+      const fd = new FormData();
+      fd.append("file", file);
+
+      try {
+        const res = await fetch(`${API_BASE}/upload`, { method: "POST", body: fd });
+        if (!res.ok) {
+          const errJson = await res.json().catch(() => ({}));
+          throw new Error(errJson.detail || `HTTP ${res.status}`);
+        }
+        await res.json();
+        uploadMsg.textContent = "Gotowe ✅";
+        await listInvoices();
+        await loadAnalytics();
+      } catch (err) {
+        uploadMsg.textContent = `Błąd: ${err.message}`;
+      }
+    });
+
+    // analytics
+    async function loadAnalytics() {
+      try {
+        const res = await fetch(`${API_BASE}/analytics`);
+        const a = await res.json();
+        analyticsBox.innerHTML = `
+          Faktur: <b>${a.total_invoices}</b> · Suma brutto: <b>${a.total_gross}</b> ·
+          Śr. pewność: <b>${a.avg_confidence}</b>
+        `;
+      } catch {
+        analyticsBox.textContent = "Błąd pobierania statystyk";
+      }
+    }
+    refreshBtn.addEventListener("click", loadAnalytics);
+
+    // export CSV
+    exportBtn.addEventListener("click", async () => {
+      exportMsg.textContent = "Generowanie…";
+      try {
+        const res = await fetch(`${API_BASE}/export/csv`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "invoices.csv";
+        a.click();
+        exportMsg.textContent = "Gotowe ✅";
+      } catch {
+        exportMsg.textContent = "Błąd eksportu ❌";
+      }
+    });
+
+    // init
+    (async function init() {
+      await health();
+      await listInvoices();
+      await loadAnalytics();
+    })();
+  </script>
 </body>
-
 </html>
