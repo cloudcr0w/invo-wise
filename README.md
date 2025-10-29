@@ -45,6 +45,7 @@ The API will run at http://127.0.0.1:8000
 - `POST /upload` – upload a file  
 - `GET /export/csv` – download all invoices as CSV  
 - `GET /version` – API version info
+- `GET /summary/{invoice_id}` – mock AI summary (category + opis)
 
 ### 🧪 Dev UI
 Open: `http://127.0.0.1:8000/web/app.html`  
