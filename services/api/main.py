@@ -1,8 +1,19 @@
+# services/api/main.py
+# InvoWise API 
+# Zawiera: globalne logowanie, serwowanie statycznego frontu, CORS,
+# endpointy: /health, /invoices CRUD (light), /upload, /export/csv, /version,
+# /analytics (miesięczne agregaty), /summary (pojedyncza, bez duplikatów).
+
 from pathlib import Path
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
+from collections import defaultdict
+from datetime import datetime
+import io
+import csv
+import logging
+
 from fastapi import FastAPI, UploadFile, File, HTTPException
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, StreamingResponse
+from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from uuid import uuid4
@@ -11,40 +22,52 @@ from .models import Invoice, Item, Totals
 from .storage import save_invoice, list_invoices, get_invoice, delete_invoice
 from .parsers.pl_invoice import parse_text_to_fields
 
+# --- LOGOWANIE GLOBALNE ---
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
+)
+logger = logging.getLogger("invo-wise")
 
+# --- APP ---
 app = FastAPI(title="InvoWise API", version="0.1.0")
 print("🚀 InvoWise API running — open http://127.0.0.1:8000/web/app.html for dev UI")
 
-
-from pathlib import Path
-from fastapi.staticfiles import StaticFiles
-
+# --- STATYCZNY FRONT /web ---
 BASE_DIR = Path(__file__).resolve().parents[2]  # repo root
 STATIC_DIR = BASE_DIR / "apps" / "landing"
 print("STATIC_DIR:", STATIC_DIR, "exists:", STATIC_DIR.exists())
-
 app.mount("/web", StaticFiles(directory=str(STATIC_DIR), html=True), name="web")
 
+# --- CORS ---
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*",],  
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+# --- MODELE REQ ---
 class InvoiceCreateRequest(BaseModel):
     raw_text: str
 
 
+# =====================
+# Health & Core Invoices
+# =====================
+
 @app.get("/health")
 async def health():
+    logger.info("Health endpoint called")
     return {"ok": True, "invoices": len(list_invoices())}
 
 
 @app.get("/invoices")
 async def invoices():
-    return [inv.model_dump() for inv in list_invoices()]
+    data = [inv.model_dump() for inv in list_invoices()]
+    logger.info("Listed invoices: %s", len(data))
+    return data
 
 
 @app.get("/invoices/{invoice_id}")
@@ -52,15 +75,20 @@ async def invoice_detail(invoice_id: str):
     inv = get_invoice(invoice_id)
     if not inv:
         raise HTTPException(status_code=404, detail="not found")
+    logger.info("Invoice fetched: %s", invoice_id)
     return inv.model_dump()
 
 
 @app.delete("/invoices/{invoice_id}")
 async def invoice_delete(invoice_id: str):
     ok = delete_invoice(invoice_id)
+    logger.info("Invoice deleted=%s id=%s", ok, invoice_id)
     return {"deleted": ok}
 
 
+# =====================
+# Create from raw text
+# =====================
 @app.post("/invoices/text")
 async def create_from_text(body: InvoiceCreateRequest):
     fields = parse_text_to_fields(body.raw_text)
@@ -82,20 +110,25 @@ async def create_from_text(body: InvoiceCreateRequest):
         confidence=0.42,
     )
     save_invoice(inv)
+    logger.info("Invoice created from text: %s", inv.invoice_id)
     return JSONResponse(inv.model_dump())
 
 
+# =====================
+# Upload (mock, bez OCR)
+# =====================
 @app.post("/upload")
 async def upload(file: UploadFile = File(...)):
-    # Week 1: accept file, read text very naively (no OCR yet)
-    # services/api/main.py – dopisz na górze endpointu /upload: 
-    if not file.filename.lower().endswith((".pdf", ".jpg", ".jpeg", ".png", ".txt")):
+    # Prosta walidacja rozszerzeń i rozmiaru
+    allowed_ext = (".pdf", ".jpg", ".jpeg", ".png", ".txt")
+    if not file.filename.lower().endswith(allowed_ext):
         raise HTTPException(status_code=400, detail="Unsupported file type")
-    if len(await file.read()) > 2_000_000:
+
+    content = await file.read()
+    if len(content) > 2_000_000:
         raise HTTPException(status_code=400, detail="File too large (max 2MB)")
     await file.seek(0)
 
-    content = await file.read()
     try:
         text = content.decode("utf-8", errors="ignore")
     except Exception:
@@ -121,12 +154,13 @@ async def upload(file: UploadFile = File(...)):
         confidence=0.20,
     )
     save_invoice(inv)
+    logger.info("Invoice uploaded: %s (%s bytes)", inv.invoice_id, len(content))
     return inv.model_dump()
 
-import io, csv
-from fastapi.responses import StreamingResponse
 
-
+# =====================
+# Export CSV
+# =====================
 @app.get("/export/csv")
 async def export_csv():
     invoices = list_invoices()
@@ -139,67 +173,112 @@ async def export_csv():
     for inv in invoices:
         writer.writerow([
             inv.invoice_id,
-            inv.issuer.get("nip", ""),
-            inv.file_uri or "",
-            inv.totals.gross,
-            inv.confidence,
+            (inv.issuer or {}).get("nip", ""),
+            getattr(inv, "file_uri", "") or "",
+            getattr(inv.totals, "gross", 0.0),
+            getattr(inv, "confidence", 0.0),
         ])
     output.seek(0)
     headers = {"Content-Disposition": "attachment; filename=invoices.csv"}
+    logger.info("CSV exported for %s invoices", len(invoices))
     return StreamingResponse(output, media_type="text/csv", headers=headers)
 
+
+# =====================
+# Version
+# =====================
 @app.get("/version")
 async def version():
     return {"version": "0.1.0", "env": "dev"}
 
+
+# =====================
+# Analytics (monthly)
+# =====================
 @app.get("/analytics")
 async def analytics():
     """
-    Placeholder endpoint for invoice analytics.
-    In the future: aggregate total net, VAT, and gross sums.
+    Miesięczne agregaty na podstawie Invoice.totals (net, vat, gross).
+    Jeśli Invoice nie ma daty, wrzucam do miesiąca "unknown".
     """
-    sample = {
-        "total_invoices": len(list_invoices()),
-        "total_gross": sum(inv.totals.gross for inv in list_invoices()),
-        "avg_confidence": round(
-            sum(inv.confidence for inv in list_invoices()) / max(1, len(list_invoices())), 2
-        ),
+    invoices = list_invoices()
+
+    monthly = defaultdict(lambda: {
+        "count": 0,
+        "total_net": 0.0,
+        "total_vat": 0.0,
+        "total_gross": 0.0
+    })
+
+    for inv in invoices:
+        # Wyciągam miesiąc YYYY-MM (jeśli brak daty — 'unknown')
+        month = "unknown"
+        try:
+            raw_date = getattr(inv, "date", None)
+            if raw_date:
+                if isinstance(raw_date, str):
+                    month = raw_date[:7]  # 'YYYY-MM-DD' -> 'YYYY-MM'
+                else:
+                    month = raw_date.strftime("%Y-%m")
+        except Exception:
+            month = "unknown"
+
+        net = float(getattr(getattr(inv, "totals", None), "net", 0.0) or 0.0)
+        vat = float(getattr(getattr(inv, "totals", None), "vat", 0.0) or 0.0)
+        gross = float(getattr(getattr(inv, "totals", None), "gross", 0.0) or 0.0)
+
+        monthly[month]["count"] += 1
+        monthly[month]["total_net"] += net
+        monthly[month]["total_vat"] += vat
+        monthly[month]["total_gross"] += gross
+
+    def sort_key(k: str):
+        return (k == "unknown", k)
+
+    out = []
+    for m in sorted(monthly.keys(), key=sort_key):
+        agg = monthly[m]
+        out.append({
+            "month": m,
+            "count": agg["count"],
+            "total_net": round(agg["total_net"], 2),
+            "total_vat": round(agg["total_vat"], 2),
+            "total_gross": round(agg["total_gross"], 2),
+        })
+
+    ytd = {
+        "count": sum(v["count"] for v in monthly.values()),
+        "total_net": round(sum(v["total_net"] for v in monthly.values()), 2),
+        "total_vat": round(sum(v["total_vat"] for v in monthly.values()), 2),
+        "total_gross": round(sum(v["total_gross"] for v in monthly.values()), 2),
     }
-    return sample
-@app.get("/summary/{invoice_id}")
-async def invoice_summary(invoice_id: str):
-    """
-    Mock: AI summary – opis wydatku i kategoria kosztu.
-    (W przyszłości: wywołanie modelu LLM z AWS Bedrock / OpenAI.)
-    """
-    inv = get_invoice(invoice_id)
-    if not inv:
-        raise HTTPException(status_code=404, detail="Invoice not found")
 
-    issuer = inv.issuer.get("nip", "nieznany NIP")
-    total = inv.totals.gross
-    category = "usługi IT" if total > 100 else "materiały biurowe"
-    summary = f"Faktura od {issuer} na kwotę {total} zł dotyczy prawdopodobnie kategorii: {category}."
-
+    logger.info("/analytics generated for %s month buckets (YTD invoices: %s)", len(out), ytd["count"])
     return {
-        "invoice_id": inv.invoice_id,
-        "category": category,
-        "summary": summary,
-        "confidence": inv.confidence,
+        "analytics": out,
+        "ytd": ytd,
+        "generated_at": datetime.now().isoformat(timespec="seconds"),
+        "version": "0.1.0"
     }
+
+
+# =====================
+# Summary (single, no duplicates)
+# =====================
 @app.get("/summary/{invoice_id}")
 async def invoice_summary(invoice_id: str):
     """
     Mock AI summary – kategoryzacja i krótki opis.
-    TODO: podpiąć prawdziwe LLM (Bedrock/OpenAI), prompt z kontekstem (NIP, pozycje, kwoty).
+    TODO: podpiąć prawdziwe LLM (Bedrock/OpenAI) + prompt z kontekstem (NIP, pozycje, kwoty).
     """
     inv = get_invoice(invoice_id)
     if not inv:
         raise HTTPException(status_code=404, detail="Invoice not found")
 
     issuer_nip = (inv.issuer or {}).get("nip") or "NIP nieznany"
-    total = inv.totals.gross
-    # bardzo prosta reguła pod demo; jutro zamienimy na LLM
+    total = getattr(inv.totals, "gross", 0.0)
+
+    # prosta reguła demo; później zastąpię LLM
     if total >= 500:
         category = "usługi IT"
     elif total >= 100:
@@ -213,5 +292,5 @@ async def invoice_summary(invoice_id: str):
         "invoice_id": inv.invoice_id,
         "category": category,
         "summary": summary,
-        "confidence": inv.confidence,
+        "confidence": getattr(inv, "confidence", 0.0),
     }
