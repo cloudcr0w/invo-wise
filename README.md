@@ -50,3 +50,27 @@ The API will run at http://127.0.0.1:8000
 ### 🧪 Dev UI
 Open: `http://127.0.0.1:8000/web/app.html`  
 Now includes quick analytics widget (refresh button).
+
+## 🧠 Analytics Endpoint (Preview)
+
+The `/analytics` endpoint provides monthly summaries of invoices based on `Invoice.totals`.
+
+Example:
+```json
+{
+  "month": "2025-10",
+  "count": 4,
+  "total_net": 400.0,
+  "total_vat": 92.0,
+  "total_gross": 492.0
+}
+```
+
+Notes:
+
+Values are aggregated per month (YYYY-MM).
+
+If no date is present, data is grouped under "unknown".
+
+Response also includes a ytd (year-to-date) summary and generated_at timestamp.
+
