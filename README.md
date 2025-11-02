@@ -72,5 +72,4 @@ Values are aggregated per month (YYYY-MM).
 
 If no date is present, data is grouped under "unknown".
 
-Response also includes a ytd (year-to-date) summary and generated_at timestamp.
-
+Response also includes a ytd (year-to-date) summary and generated_at timestamp
