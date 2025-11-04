@@ -260,6 +260,46 @@ async def analytics():
         "generated_at": datetime.now().isoformat(timespec="seconds"),
         "version": "0.1.0"
     }
+@app.get("/reports/export")
+async def export_reports(format: str = "json", month: str = None):
+    """
+    Eksport raportu miesięcznego (JSON lub CSV).
+    Jeśli nie podano miesiąca, zwraca pełne zestawienie.
+    """
+    invoices = list_invoices()
+    if not invoices:
+        raise HTTPException(status_code=404, detail="No invoices found")
+
+    # filtrujemy po miesiącu jeśli jest podany
+    if month:
+        invoices = [inv for inv in invoices if getattr(inv, "date", "").startswith(month)]
+        if not invoices:
+            raise HTTPException(status_code=404, detail=f"No data for {month}")
+
+    # przygotowujemy dane
+    rows = [
+        {
+            "invoice_id": inv.invoice_id,
+            "nip": (inv.issuer or {}).get("nip", ""),
+            "gross": getattr(inv.totals, "gross", 0.0),
+            "confidence": getattr(inv, "confidence", 0.0),
+        }
+        for inv in invoices
+    ]
+
+    # CSV lub JSON
+    if format == "csv":
+        output = io.StringIO()
+        writer = csv.DictWriter(output, fieldnames=rows[0].keys())
+        writer.writeheader()
+        writer.writerows(rows)
+        output.seek(0)
+        headers = {"Content-Disposition": f"attachment; filename=report_{month or 'all'}.csv"}
+        logger.info(f"/reports/export -> CSV ({len(rows)} rows)")
+        return StreamingResponse(output, media_type="text/csv", headers=headers)
+    else:
+        logger.info(f"/reports/export -> JSON ({len(rows)} rows)")
+        return {"month": month or "all", "count": len(rows), "data": rows}
 
 
 # =====================
