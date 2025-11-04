@@ -29,11 +29,11 @@ The goal of this iteration is to provide users with a **visual dashboard** showi
 ```
 
 ### ✅ Phase 2 – Report Exporting
-- [ ] Add endpoint `/reports/export`
-  - [ ] Support formats: `json`, `csv`
-  - [ ] Allow optional query params: `?month=2025-09&format=csv`
-  - [ ] Auto-generate CSV using `pandas` or `csv` standard lib
-  - [ ] Return downloadable file with proper headers
+- [x] Add endpoint `/reports/export`
+  - [x] Support formats: `json`, `csv`
+  - [x] Allow optional query params: `?month=2025-09&format=csv`
+  - [x] Auto-generate CSV using `pandas` or `csv` standard lib
+  - [x] Return downloadable file with proper headers
 
 Example:
 ```bash
