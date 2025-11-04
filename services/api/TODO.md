@@ -12,21 +12,21 @@ The goal of this iteration is to provide users with a **visual dashboard** showi
 ## 🔧 Backend / API Layer
 
 ### ✅ Phase 1 – Analytics Expansion
-- [ ] Extend `/analytics` endpoint to include:
-  - [ ] Monthly income and expense aggregation  
-  - [ ] VAT breakdown (input/output VAT, totals per month)
-  - [ ] Year-to-date summary (`YTD` field)
-- [ ] Use existing invoice model for data grouping and filtering
-- [ ] Return JSON in structure:
+- [x] Extend `/analytics` endpoint to include:
+  - [x] Monthly aggregation (count, total_net, total_vat, total_gross)
+  - [ ] VAT breakdown **input/output** (wymaga pola `type: income|expense` w Invoice)
+  - [x] Year-to-date summary (`ytd`)
+- [x] Use existing invoice model for grouping/filtering
+- [x] Return structured JSON:
   ```json
   {
     "month": "2025-09",
-    "total_income": 12000,
-    "total_expense": 3500,
-    "vat_input": 500,
-    "vat_output": 950
+    "count": 3,
+    "total_net": 300.0,
+    "total_vat": 69.0,
+    "total_gross": 369.0
   }
-  ```
+```
 
 ### ✅ Phase 2 – Report Exporting
 - [ ] Add endpoint `/reports/export`
