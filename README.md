@@ -47,6 +47,16 @@ The API will run at http://127.0.0.1:8000
 - `GET /version` – API version info
 - `GET /summary/{invoice_id}` – mock AI summary (category + opis)
 
+## 📊 New API Endpoints
+
+### `/analytics`
+Returns monthly aggregated totals of invoices:
+`count`, `total_net`, `total_vat`, `total_gross`, and `ytd`.
+
+### `/reports/export`
+Exports invoices in `json` or `csv` format with optional `month` parameter.
+Example:
+
 ### 🧪 Dev UI
 Open: `http://127.0.0.1:8000/web/app.html`  
 Now includes quick analytics widget (refresh button).
