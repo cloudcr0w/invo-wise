@@ -59,6 +59,18 @@ GET /reports/export?month=2025-09&format=csv
 
 ---
 
+---
+
+## 🚀 Phase 5 – Upcoming Integrations (Planned)
+
+- [ ] **S3 Data Backup:** automate daily export of analytics reports to AWS S3  
+- [ ] **Email Summary Reports:** send monthly financial summary via AWS SES or SMTP  
+- [ ] **Slack Notifications:** optional integration to alert about overdue invoices  
+- [ ] **Multi-user Dashboard:** prepare base structure for team-level access and permissions  
+
+🗓️ *Target timeframe: late November 2025*
+
+
 ## 🧩 Tech Notes
 - Use `Chart.js` or `Plotly.js` for rendering charts.
 - Keep frontend API calls under `src/api/dashboard.js`.
