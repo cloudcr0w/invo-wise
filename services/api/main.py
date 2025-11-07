@@ -211,7 +211,7 @@ async def analytics():
     })
 
     for inv in invoices:
-        # Wyciągam miesiąc YYYY-MM (jeśli brak daty — 'unknown')
+       
         month = "unknown"
         try:
             raw_date = getattr(inv, "date", None)
