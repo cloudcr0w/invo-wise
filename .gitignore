@@ -4,6 +4,8 @@ __pycache__/
 .venv/
 .env
 *.log
+*.egg-info/
+.dist/
 
 # node/web
 node_modules/
@@ -19,3 +21,8 @@ dist/
 venv/
 .env.local
 .env.development.local
+
+# Test/coverage
+.pytest_cache/
+.coverage
+htmlcov/
