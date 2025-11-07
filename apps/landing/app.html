@@ -10,7 +10,7 @@
             font-family: ui-sans-serif, system-ui, Arial;
             margin: 24px;
             background: #0b1020;
-            color: #e8ecf8;
+            color: #e8ecf8
         }
 
         .card {
@@ -18,7 +18,7 @@
             border: 1px solid rgba(255, 255, 255, .1);
             border-radius: 12px;
             padding: 16px;
-            margin-bottom: 16px;
+            margin-bottom: 16px
         }
 
         input,
@@ -27,56 +27,73 @@
             border-radius: 10px;
             border: 1px solid rgba(255, 255, 255, .2);
             background: rgba(255, 255, 255, .05);
-            color: #e8ecf8;
+            color: #e8ecf8
         }
 
-        button[type="submit"]:hover {
+        button[type="submit"]:hover,
+        button:hover {
             filter: brightness(1.1);
             transform: scale(1.03);
-            transition: .2s;
+            transition: .2s
         }
 
         button {
-            cursor: pointer;
+            cursor: pointer
         }
 
         table {
             width: 100%;
-            border-collapse: collapse;
+            border-collapse: collapse
         }
 
         th,
         td {
             padding: 10px;
             border-bottom: 1px solid rgba(255, 255, 255, .1);
-            text-align: left;
+            text-align: left
         }
 
-        /* clickable rows */
         tr.inv-row {
-            cursor: pointer;
+            cursor: pointer
         }
 
         tr.inv-row:hover {
-            background: rgba(255, 255, 255, .04);
+            background: rgba(255, 255, 255, .04)
         }
 
         .muted {
-            opacity: .8;
+            opacity: .8
         }
 
         .ok {
-            color: #22c55e;
+            color: #22c55e
         }
 
         .err {
-            color: #ef4444;
+            color: #ef4444
         }
 
         code {
             background: rgba(0, 0, 0, .25);
             padding: 2px 6px;
-            border-radius: 6px;
+            border-radius: 6px
+        }
+
+        .row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, .12);
+            background: rgba(255, 255, 255, .06);
+            font-size: 12px;
+            color: #cbd5e1
         }
     </style>
 </head>
@@ -130,35 +147,46 @@
     </div>
 
     <div class="card">
-        <h3>📊 Szybkie statystyki</h3>
-        <button id="refresh-analytics" type="button">Odśwież</button>
+        <div class="row" style="justify-content:space-between;">
+            <h3 style="margin:0">📊 Szybkie statystyki</h3>
+            <span class="tag" id="gen-info">–</span>
+        </div>
+        <div class="row" style="margin-top:8px;">
+            <button id="refresh-analytics" type="button">Odśwież</button>
+        </div>
         <div id="analytics" class="muted" style="margin-top:8px">–</div>
+        <div id="monthly" class="muted" style="margin-top:8px">–</div>
     </div>
 
-    <div style="margin-top:14px;">
-        <button id="export-btn">📤 Eksportuj CSV</button>
+    <div class="card">
+        <h3>📤 Eksport</h3>
+        <div class="row">
+            <button id="export-btn">CSV</button>
+            <button id="export-json-btn">JSON</button>
+            <input id="month-input" placeholder="YYYY-MM (opcjonalnie)" style="max-width:150px" />
+        </div>
         <span id="export-msg" class="muted"></span>
     </div>
 
     <script>
-        // base API (local uvicorn)
         const API_BASE = "http://127.0.0.1:8000";
-
-        // refs
         const statusEl = document.getElementById("status");
         const tbody = document.getElementById("invoices-body");
         const uploadForm = document.getElementById("upload-form");
         const uploadMsg = document.getElementById("upload-msg");
         const detailCard = document.getElementById("detail-card");
         const detailJson = document.getElementById("detail-json");
-        const aiCard = document.getElementById("ai-card");      // reserved for next step
-        const aiSummary = document.getElementById("ai-summary"); // reserved for next step
+        const aiCard = document.getElementById("ai-card");
+        const aiSummary = document.getElementById("ai-summary");
         const analyticsBox = document.getElementById("analytics");
+        const monthlyBox = document.getElementById("monthly");
+        const genInfo = document.getElementById("gen-info");
         const refreshBtn = document.getElementById("refresh-analytics");
         const exportBtn = document.getElementById("export-btn");
+        const exportJsonBtn = document.getElementById("export-json-btn");
         const exportMsg = document.getElementById("export-msg");
+        const monthInput = document.getElementById("month-input");
 
-        // health
         async function health() {
             try {
                 const res = await fetch(`${API_BASE}/health`);
@@ -171,7 +199,6 @@
             }
         }
 
-        // list + row click → detail
         async function listInvoices() {
             try {
                 const res = await fetch(`${API_BASE}/invoices`);
@@ -181,31 +208,26 @@
                     return;
                 }
                 tbody.innerHTML = data.map(inv => `
-          <tr data-id="${inv.invoice_id}" class="inv-row">
-            <td><code>${inv.invoice_id}</code></td>
-            <td>${inv.issuer?.nip || "-"}</td>
-            <td>${inv.file_uri || "-"}</td>
-            <td>${inv.totals?.gross ?? "-"}</td>
-            <td>${(inv.confidence ?? 0).toFixed(2)}</td>
-          </tr>
-        `).join("");
+      <tr data-id="${inv.invoice_id}" class="inv-row">
+        <td><code>${inv.invoice_id}</code></td>
+        <td>${inv.issuer?.nip || "-"}</td>
+        <td>${inv.file_uri || "-"}</td>
+        <td>${(inv.totals?.gross ?? "-")}</td>
+        <td>${(inv.confidence ?? 0).toFixed(2)}</td>
+      </tr>
+    `).join("");
 
-                // bind detail fetchers
                 for (const tr of document.querySelectorAll(".inv-row")) {
                     tr.addEventListener("click", async () => {
                         const id = tr.getAttribute("data-id");
                         detailJson.textContent = "Ładowanie…";
                         detailCard.style.display = "block";
-
                         try {
-                            // pobierz szczegóły faktury
                             const res = await fetch(`${API_BASE}/invoices/${id}`);
                             if (!res.ok) throw new Error(`HTTP ${res.status}`);
                             const json = await res.json();
                             detailJson.textContent = JSON.stringify(json, null, 2);
                             detailCard.scrollIntoView({ behavior: "smooth", block: "start" });
-
-                            // pobierz AI summary
                             try {
                                 const res2 = await fetch(`${API_BASE}/summary/${id}`);
                                 if (res2.ok) {
@@ -215,21 +237,47 @@
                                 } else {
                                     aiCard.style.display = "none";
                                 }
-                            } catch {
-                                aiCard.style.display = "none";
-                            }
-
+                            } catch { aiCard.style.display = "none"; }
                         } catch {
                             detailJson.textContent = "Błąd pobierania szczegółów.";
                             aiCard.style.display = "none";
                         }
                     });
                 }
-
             } catch {
                 tbody.innerHTML = `<tr><td colspan="5" class="err">Błąd pobierania listy</td></tr>`;
             }
         }
+
+        // dostosowane do nowego schematu /analytics: { analytics: [], ytd: {...}, generated_at }
+        async function loadAnalytics() {
+            try {
+                const res = await fetch(`${API_BASE}/analytics`);
+                const a = await res.json();
+                const y = a.ytd || {};
+                const count = y.count ?? 0;
+                const gross = (y.total_gross ?? 0).toLocaleString("pl-PL", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                const vat = (y.total_vat ?? 0).toLocaleString("pl-PL", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                analyticsBox.innerHTML = `Faktur: <b>${count}</b> · Suma brutto: <b>${gross} zł</b> · VAT: <b>${vat} zł</b>`;
+                genInfo.textContent = a.generated_at ? `generated ${a.generated_at}` : "–";
+
+                if (Array.isArray(a.analytics) && a.analytics.length) {
+                    const last = a.analytics.slice(-3);
+                    const html = last.map(m => {
+                        const g = (m.total_gross ?? 0).toLocaleString("pl-PL", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                        return `<span class="tag">${m.month} • ${g} zł</span>`;
+                    }).join(" ");
+                    monthlyBox.innerHTML = html;
+                } else {
+                    monthlyBox.textContent = "Brak danych miesięcznych.";
+                }
+            } catch {
+                analyticsBox.textContent = "Błąd pobierania statystyk";
+                monthlyBox.textContent = "—";
+                genInfo.textContent = "—";
+            }
+        }
+        refreshBtn.addEventListener("click", loadAnalytics);
 
         // upload
         uploadForm.addEventListener("submit", async (e) => {
@@ -238,7 +286,6 @@
             const file = document.getElementById("file").files[0];
             const fd = new FormData();
             fd.append("file", file);
-
             try {
                 const res = await fetch(`${API_BASE}/upload`, { method: "POST", body: fd });
                 if (!res.ok) {
@@ -254,40 +301,35 @@
             }
         });
 
-        // analytics
-        async function loadAnalytics() {
-            try {
-                const res = await fetch(`${API_BASE}/analytics`);
-                const a = await res.json();
-                analyticsBox.innerHTML = `
-          Faktur: <b>${a.total_invoices}</b> · Suma brutto: <b>${a.total_gross}</b> ·
-          Śr. pewność: <b>${a.avg_confidence}</b>
-        `;
-            } catch {
-                analyticsBox.textContent = "Błąd pobierania statystyk";
-            }
-        }
-        refreshBtn.addEventListener("click", loadAnalytics);
-
-        // export CSV
-        exportBtn.addEventListener("click", async () => {
+        async function doExport(format) {
+            const month = (monthInput.value || "").trim();
+            const query = month ? `?format=${format}&month=${encodeURIComponent(month)}` : `?format=${format}`;
             exportMsg.textContent = "Generowanie…";
             try {
-                const res = await fetch(`${API_BASE}/export/csv`);
+                const url = `${API_BASE}/reports/export${query}`;
+                const res = await fetch(url);
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                const blob = await res.blob();
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement("a");
-                a.href = url;
-                a.download = "invoices.csv";
-                a.click();
-                exportMsg.textContent = "Gotowe ✅";
-            } catch {
-                exportMsg.textContent = "Błąd eksportu ❌";
+                if (format === "csv") {
+                    const blob = await res.blob();
+                    const link = URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = link; a.download = `report_${month || "all"}.csv`; a.click();
+                    exportMsg.textContent = "Gotowe ✅";
+                } else {
+                    const json = await res.json();
+                    const blob = new Blob([JSON.stringify(json, null, 2)], { type: "application/json" });
+                    const link = URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = link; a.download = `report_${month || "all"}.json`; a.click();
+                    exportMsg.textContent = "Gotowe ✅";
+                }
+            } catch (err) {
+                exportMsg.textContent = `Błąd eksportu ❌ (${err.message})`;
             }
-        });
+        }
+        exportBtn.addEventListener("click", () => doExport("csv"));
+        exportJsonBtn.addEventListener("click", () => doExport("json"));
 
-        // init
         (async function init() {
             await health();
             await listInvoices();
