@@ -1,1 +1,28 @@
-fastapi\nuvicorn\npydantic
+# ============================================
+# 🧾 Invo-Wise — Python dependencies
+# ============================================
+
+# --- Core API ---
+fastapi==0.115.0
+uvicorn[standard]==0.30.3
+pydantic==2.8.2
+
+# --- Middleware / helpers ---
+python-multipart==0.0.9      # file uploads
+requests==2.32.3             # simple HTTP calls
+python-dotenv==1.0.1         # load .env for local/dev config
+jinja2==3.1.4                # template rendering (future)
+
+# --- Data / export ---
+pandas==2.2.3                # CSV/JSON reports (optional)
+numpy==1.26.4                # base dep for pandas
+
+# --- Dev & testing ---
+pytest==8.3.3
+httpx==0.27.0                # testclient alternative
+black==24.8.0
+flake8==7.1.0
+
+# --- Optional future integrations ---
+boto3==1.34.70               # AWS SDK (S3 upload later)
+openai==1.45.0               # for LLM summaries (future)
