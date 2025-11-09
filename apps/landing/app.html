@@ -280,7 +280,17 @@
                 genInfo.textContent = "—";
             }
         }
-        refreshBtn.addEventListener("click", loadAnalytics);
+       
+        refreshBtn.addEventListener("click", async () => {
+            const prev = refreshBtn.textContent;
+            refreshBtn.textContent = "Ładowanie…";
+            refreshBtn.disabled = true;
+            try { await loadAnalytics(); }
+            finally {
+                refreshBtn.textContent = prev;
+                refreshBtn.disabled = false;
+            }
+        });
 
         // upload
         uploadForm.addEventListener("submit", async (e) => {
@@ -303,7 +313,7 @@
                 uploadMsg.textContent = `Błąd: ${err.message}`;
             }
         });
-// doExport(format): downloads CSV or JSON from /reports/export with optional `month`
+        // doExport(format): downloads CSV or JSON from /reports/export with optional `month`
 
         async function doExport(format) {
             const month = (monthInput.value || "").trim();
