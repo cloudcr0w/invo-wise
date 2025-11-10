@@ -18,6 +18,7 @@ The goal of this iteration is to provide users with a **visual dashboard** showi
   - [x] Year-to-date summary (`ytd`)
 - [x] Use existing invoice model for grouping/filtering
 - [x] Return structured JSON:
+
   ```json
   {
     "month": "2025-09",
@@ -45,12 +46,12 @@ GET /reports/export?month=2025-09&format=csv
 ## 💻 Frontend / Dashboard Layer
 
 ### ✅ Phase 3 – Dashboard UI (MVP)
-- [ ] Create minimal dashboard view with:
-  - [ ] Total income, expense, and VAT cards
-  - [ ] Monthly trend chart (line or bar chart)
-  - [ ] “Export” button (CSV/JSON)
-- [ ] Fetch data from `/analytics` and `/reports/export`
-- [ ] Display loading states and error handling
+- [x] Create minimal dashboard view with:
+  - [x] Total income, expense, and VAT cards
+  - [x] Monthly trend chart (line or bar chart)
+  - [x] “Export” button (CSV/JSON)
+- [x] Fetch data from `/analytics` and `/reports/export`
+- [x] Display loading states and error handling
 
 ### ✅ Phase 4 – Enhancements
 - [ ] Add filters (month/year selector)
@@ -78,11 +79,15 @@ GET /reports/export?month=2025-09&format=csv
 - All new features should include at least one test case (backend or frontend).
 
 ---
-## ✅ Progress Log (2025-11-05)
+## ✅ Progress Log (2025-11-10)
 
-- Backend phase completed (analytics + report export fully functional)
-- Preparing for frontend dashboard MVP next week
-- Next step: connect `/analytics` and `/reports/export` data to UI mock
+Dodano KPI (YTD): count, total_gross, total_vat
+
+Dodano wykres trendu (Chart.js) na podstawie /analytics
+
+Podpięto eksport CSV/JSON + drobne UX/loader’y
+
+Kolejny krok: dodać Invoice.type (income|expense) i rozszerzyć /analytics o breakdown; potem drugi dataset na wykresie i dodatkowe KPI
 
 ---
 
