@@ -127,7 +127,7 @@
     }
 
     // /analytics: { analytics: [], ytd: {...}, generated_at }
-    async function loadAnalytics() {
+    async function loadAnalytics(filter) {
       try {
         const res = await fetch(`${API_BASE}/analytics`);
         const a = await res.json();
@@ -249,3 +249,15 @@ exportJsonBtn.addEventListener("click", () =>
   const prev = btn.textContent; btn.classList.add('btn--loading'); btn.disabled = true;
   return Promise.resolve(fn()).finally(()=>{ btn.classList.remove('btn--loading'); btn.disabled=false; btn.textContent = prev; });
 }
+
+const filterMonth = document.getElementById('filter-month');
+const applyFilter = document.getElementById('apply-filter');
+const filterMsg = document.getElementById('filter-msg');
+
+applyFilter?.addEventListener('click', async ()=>{
+  const m = (filterMonth.value||'').trim();
+  // tylko UI: ogranicz wykres i „Ostatnie 3 miesiące” do miesiąca lub nowszych
+  await loadAnalytics(m);
+  monthInput.value = m; // podłóż do eksportu
+  filterMsg.textContent = m ? `Zastosowano filtr dla: ${m}` : 'Wyczyszczono filtr';
+});
