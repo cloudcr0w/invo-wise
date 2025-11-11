@@ -261,3 +261,9 @@ applyFilter?.addEventListener('click', async ()=>{
   monthInput.value = m; // podłóż do eksportu
   filterMsg.textContent = m ? `Zastosowano filtr dla: ${m}` : 'Wyczyszczono filtr';
 });
+
+function toast(msg, type='ok'){
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.className = `toast toast--${type}`; el.style.display='block';
+  setTimeout(()=>{ el.style.display='none'; }, 2500);
+}
