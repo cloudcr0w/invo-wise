@@ -1,77 +1,126 @@
 /* Minimal polish for dashboard cards and tags */
-:root { --muted: rgba(255,255,255,.06); --line: rgba(255,255,255,.12); }
+:root {
+	--muted: rgba(255, 255, 255, 0.06);
+	--line: rgba(255, 255, 255, 0.12);
+}
 
-.card--tight { padding: 12px; }
-.pill { display:inline-block; padding:4px 10px; border:1px solid var(--line); border-radius:999px; }
-.table-sm th, .table-sm td { padding:8px; font-size:14px; }
-.footer-note { opacity:.7; font-size:12px; margin-top:10px; }
+.card--tight {
+	padding: 12px;
+}
+.pill {
+	display: inline-block;
+	padding: 4px 10px;
+	border: 1px solid var(--line);
+	border-radius: 999px;
+}
+.table-sm th,
+.table-sm td {
+	padding: 8px;
+	font-size: 14px;
+}
+.footer-note {
+	opacity: 0.7;
+	font-size: 12px;
+	margin-top: 10px;
+}
 
 /* === NOWE: KPI grid === */
-.kpis{
-  display:grid;
-  grid-template-columns: repeat(3, minmax(160px, 1fr));
-  gap:12px;
-  margin-top:10px;
+.kpis {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(160px, 1fr));
+	gap: 12px;
+	margin-top: 10px;
 }
-.kpi{
-  background: rgba(255,255,255,.05);
-  border:1px solid var(--line);
-  border-radius:12px;
-  padding:14px;
+.kpi {
+	background: rgba(255, 255, 255, 0.05);
+	border: 1px solid var(--line);
+	border-radius: 12px;
+	padding: 14px;
 }
-.kpi__label{
-  font-size:12px;
-  color:#cbd5e1;
-  letter-spacing:.2px;
-  margin-bottom:6px;
+.kpi__label {
+	font-size: 12px;
+	color: #cbd5e1;
+	letter-spacing: 0.2px;
+	margin-bottom: 6px;
 }
-.kpi__value{
-  font-size:22px;
-  font-weight:700;
+.kpi__value {
+	font-size: 22px;
+	font-weight: 700;
 }
 
 /* Responsive */
-@media (max-width: 720px){
-  .kpis{ grid-template-columns: 1fr; }
+@media (max-width: 720px) {
+	.kpis {
+		grid-template-columns: 1fr;
+	}
 }
-
-.btn--loading { position: relative; pointer-events:none; opacity:.8 }
-.btn--loading::after {
-  content:""; position:absolute; right:8px; top:50%; width:14px; height:14px;
-  border:2px solid rgba(255,255,255,.6); border-top-color:transparent; border-radius:50%;
-  transform:translateY(-50%); animation:spin .7s linear infinite;
-}
-@keyframes spin { to { transform: translateY(-50%) rotate(360deg); } }
 
 .btn--loading {
-  position: relative;
-  pointer-events: none;
-  opacity: 0.8;
+	position: relative;
+	pointer-events: none;
+	opacity: 0.8;
 }
 .btn--loading::after {
-  content: "";
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  width: 14px;
-  height: 14px;
-  border: 2px solid rgba(255, 255, 255, 0.6);
-  border-top-color: transparent;
-  border-radius: 50%;
-  transform: translateY(-50%);
-  animation: spin 0.7s linear infinite;
+	content: '';
+	position: absolute;
+	right: 8px;
+	top: 50%;
+	width: 14px;
+	height: 14px;
+	border: 2px solid rgba(255, 255, 255, 0.6);
+	border-top-color: transparent;
+	border-radius: 50%;
+	transform: translateY(-50%);
+	animation: spin 0.7s linear infinite;
 }
 @keyframes spin {
-  to {
-    transform: translateY(-50%) rotate(360deg);
-  }
+	to {
+		transform: translateY(-50%) rotate(360deg);
+	}
 }
-.toast{
-  position: fixed; right: 16px; top: 16px; z-index: 9999;
-  background: var(--card); border:1px solid var(--line); padding:10px 14px; border-radius:10px;
-  box-shadow: 0 10px 30px rgba(0,0,0,.25);
-}
-.toast--err{ border-color:#ef4444; }
-.toast--ok{ border-color:#22c55e; }
 
-.kpi:hover{ transform: translateY(-1px); transition:.15s ease; }
+.btn--loading {
+	position: relative;
+	pointer-events: none;
+	opacity: 0.8;
+}
+.btn--loading::after {
+	content: '';
+	position: absolute;
+	right: 10px;
+	top: 50%;
+	width: 14px;
+	height: 14px;
+	border: 2px solid rgba(255, 255, 255, 0.6);
+	border-top-color: transparent;
+	border-radius: 50%;
+	transform: translateY(-50%);
+	animation: spin 0.7s linear infinite;
+}
+@keyframes spin {
+	to {
+		transform: translateY(-50%) rotate(360deg);
+	}
+}
+.toast {
+	position: fixed;
+	right: 16px;
+	top: 16px;
+	z-index: 9999;
+	background: var(--card);
+	border: 1px solid var(--line);
+	padding: 10px 14px;
+	border-radius: 10px;
+	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+.toast--err {
+	border-color: #ef4444;
+}
+.toast--ok {
+	border-color: #22c55e;
+}
+
+.kpi:hover {
+	transform: translateY(-1px);
+	transition: 0.15s ease;
+}
