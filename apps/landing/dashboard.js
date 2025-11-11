@@ -222,3 +222,8 @@
       await listInvoices();
       await loadAnalytics();
     })();
+
+    function withLoading(btn, fn){
+  const prev = btn.textContent; btn.classList.add('btn--loading'); btn.disabled = true;
+  return Promise.resolve(fn()).finally(()=>{ btn.classList.remove('btn--loading'); btn.disabled=false; btn.textContent = prev; });
+}

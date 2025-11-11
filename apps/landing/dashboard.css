@@ -34,3 +34,11 @@
 @media (max-width: 720px){
   .kpis{ grid-template-columns: 1fr; }
 }
+
+.btn--loading { position: relative; pointer-events:none; opacity:.8 }
+.btn--loading::after {
+  content:""; position:absolute; right:8px; top:50%; width:14px; height:14px;
+  border:2px solid rgba(255,255,255,.6); border-top-color:transparent; border-radius:50%;
+  transform:translateY(-50%); animation:spin .7s linear infinite;
+}
+@keyframes spin { to { transform: translateY(-50%) rotate(360deg); } }
