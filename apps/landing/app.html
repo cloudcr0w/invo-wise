@@ -1,30 +1,106 @@
 <!doctype html>
 <html lang="pl">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>InvoWise — podgląd (dev)</title>
   <link rel="stylesheet" href="./dashboard.css" />
   <style>
-    body{font-family:ui-sans-serif,system-ui,Arial;margin:24px;background:#0b1020;color:#e8ecf8}
-    .card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:16px;margin-bottom:16px}
-    input,button{padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.05);color:#e8ecf8}
-    button[type="submit"]:hover,button:hover{filter:brightness(1.1);transform:scale(1.03);transition:.2s}
-    button{cursor:pointer}
-    table{width:100%;border-collapse:collapse}
-    th,td{padding:10px;border-bottom:1px solid rgba(255,255,255,.1);text-align:left}
-    tr.inv-row{cursor:pointer}
-    tr.inv-row:hover{background:rgba(255,255,255,.04)}
-    .muted{opacity:.8}
-    .ok{color:#22c55e}
-    .err{color:#ef4444}
-    code{background:rgba(0,0,0,.25);padding:2px 6px;border-radius:6px}
-    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-    .tag{display:inline-block;padding:4px 8px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);font-size:12px;color:#cbd5e1}
+    body {
+      font-family: ui-sans-serif, system-ui, Arial;
+      margin: 24px;
+      background: #0b1020;
+      color: #e8ecf8
+    }
+
+    .card {
+      background: rgba(255, 255, 255, .06);
+      border: 1px solid rgba(255, 255, 255, .1);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px
+    }
+
+    input,
+    button {
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, .2);
+      background: rgba(255, 255, 255, .05);
+      color: #e8ecf8
+    }
+
+    button[type="submit"]:hover,
+    button:hover {
+      filter: brightness(1.1);
+      transform: scale(1.03);
+      transition: .2s
+    }
+
+    button {
+      cursor: pointer
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse
+    }
+
+    th,
+    td {
+      padding: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, .1);
+      text-align: left
+    }
+
+    tr.inv-row {
+      cursor: pointer
+    }
+
+    tr.inv-row:hover {
+      background: rgba(255, 255, 255, .04)
+    }
+
+    .muted {
+      opacity: .8
+    }
+
+    .ok {
+      color: #22c55e
+    }
+
+    .err {
+      color: #ef4444
+    }
+
+    code {
+      background: rgba(0, 0, 0, .25);
+      padding: 2px 6px;
+      border-radius: 6px
+    }
+
+    .row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, .12);
+      background: rgba(255, 255, 255, .06);
+      font-size: 12px;
+      color: #cbd5e1
+    }
   </style>
   <!-- Chart.js do wykresu trendu -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+
 <body>
   <h1>InvoWise — podgląd (dev)</h1>
   <p class="muted">Minimalny frontend do testu API lokalnie. Najpierw uruchomić backend: <code>make api</code></p>
@@ -47,16 +123,18 @@
     <h3>Lista faktur</h3>
     <table>
       <thead>
-      <tr>
-        <th>ID</th>
-        <th>NIP (sprzedawca)</th>
-        <th>Plik</th>
-        <th>Kwota brutto</th>
-        <th>Pewność</th>
-      </tr>
+        <tr>
+          <th>ID</th>
+          <th>NIP (sprzedawca)</th>
+          <th>Plik</th>
+          <th>Kwota brutto</th>
+          <th>Pewność</th>
+        </tr>
       </thead>
       <tbody id="invoices-body">
-        <tr><td colspan="5" class="muted">Brak danych…</td></tr>
+        <tr>
+          <td colspan="5" class="muted">Brak danych…</td>
+        </tr>
       </tbody>
     </table>
   </div>
@@ -94,6 +172,12 @@
     <div id="monthly" class="muted" style="margin-top:8px">–</div>
   </div>
 
+  <div class="row" style="margin:6px 0 8px 0">
+  <input id="filter-month" placeholder="YYYY-MM" style="max-width:150px" />
+  <button id="apply-filter" type="button">Zastosuj filtr</button>
+  <span class="muted" id="filter-msg"></span>
+</div>
+
   <!-- NOWE: wykres trendu -->
   <div class="card">
     <h3 style="margin:0 0 8px 0">📈 Trend (miesięczny brutto)</h3>
@@ -120,8 +204,9 @@
     <p id="ai-summary" class="muted"></p>
   </div>
 
-  
-<script src="./dashboard.js"></script>
+
+  <script src="./dashboard.js"></script>
   <p class="footer-note">Build: 2025-11-10</p>
 </body>
+
 </html>
