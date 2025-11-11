@@ -66,3 +66,10 @@
     transform: translateY(-50%) rotate(360deg);
   }
 }
+.toast{
+  position: fixed; right: 16px; top: 16px; z-index: 9999;
+  background: var(--card); border:1px solid var(--line); padding:10px 14px; border-radius:10px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.25);
+}
+.toast--err{ border-color:#ef4444; }
+.toast--ok{ border-color:#22c55e; }
