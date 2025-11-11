@@ -73,3 +73,5 @@
 }
 .toast--err{ border-color:#ef4444; }
 .toast--ok{ border-color:#22c55e; }
+
+.kpi:hover{ transform: translateY(-1px); transition:.15s ease; }

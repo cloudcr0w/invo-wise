@@ -267,3 +267,4 @@ function toast(msg, type='ok'){
   el.textContent = msg; el.className = `toast toast--${type}`; el.style.display='block';
   setTimeout(()=>{ el.style.display='none'; }, 2500);
 }
+document.querySelector('.footer-note')?.replaceChildren(`Build: ${new Date().toISOString().slice(0,10)}`);
