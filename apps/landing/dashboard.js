@@ -158,36 +158,53 @@
         genInfo.textContent = "—";
       }
     }
+    function withLoading(btn, fn) {
+    const prevText = btn.textContent;
+    btn.classList.add("btn--loading");
+    btn.disabled = true;
+    return Promise.resolve(fn())
+        .catch((err) => {
+        console.error("Error during action:", err);
+        throw err;
+        })
+        .finally(() => {
+        btn.classList.remove("btn--loading");
+        btn.disabled = false;
+        btn.textContent = prevText;
+        });
+    }
 
-    refreshBtn.addEventListener("click", async () => {
-      const prev = refreshBtn.textContent;
-      refreshBtn.textContent = "Ładowanie…";
-      refreshBtn.disabled = true;
-      try { await loadAnalytics(); }
-      finally { refreshBtn.textContent = prev; refreshBtn.disabled = false; }
-    });
+    refreshBtn.addEventListener("click", () =>
+  withLoading(refreshBtn, async () => {
+    await loadAnalytics();
+  })
+);
+
 
     // upload
-    uploadForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      uploadMsg.textContent = "Wysyłanie…";
-      const file = document.getElementById("file").files[0];
-      const fd = new FormData();
-      fd.append("file", file);
-      try {
-        const res = await fetch(`${API_BASE}/upload`, { method: "POST", body: fd });
-        if (!res.ok) {
-          const errJson = await res.json().catch(() => ({}));
-          throw new Error(errJson.detail || `HTTP ${res.status}`);
-        }
-        await res.json();
-        uploadMsg.textContent = "Gotowe ✅";
-        await listInvoices();
-        await loadAnalytics();
-      } catch (err) {
-        uploadMsg.textContent = `Błąd: ${err.message}`;
-      }
-    });
+   uploadForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const btn = uploadForm.querySelector("button[type='submit']");
+  uploadMsg.textContent = "";
+  withLoading(btn, async () => {
+    uploadMsg.textContent = "Wysyłanie…";
+    const file = document.getElementById("file").files[0];
+    const fd = new FormData();
+    fd.append("file", file);
+    const res = await fetch(`${API_BASE}/upload`, { method: "POST", body: fd });
+    if (!res.ok) {
+      const errJson = await res.json().catch(() => ({}));
+      throw new Error(errJson.detail || `HTTP ${res.status}`);
+    }
+    await res.json();
+    uploadMsg.textContent = "Gotowe ✅";
+    await listInvoices();
+    await loadAnalytics();
+  }).catch((err) => {
+    uploadMsg.textContent = `Błąd: ${err.message}`;
+  });
+});
+
 
     async function doExport(format) {
       const month = (monthInput.value || "").trim();
@@ -214,8 +231,13 @@
         exportMsg.textContent = `Błąd eksportu ❌ (${err.message})`;
       }
     }
-    exportBtn.addEventListener("click", () => doExport("csv"));
-    exportJsonBtn.addEventListener("click", () => doExport("json"));
+  exportBtn.addEventListener("click", () =>
+  withLoading(exportBtn, async () => await doExport("csv"))
+);
+exportJsonBtn.addEventListener("click", () =>
+  withLoading(exportJsonBtn, async () => await doExport("json"))
+);
+
 
     (async function init(){
       await health();
