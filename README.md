@@ -1,85 +1,145 @@
-# InvoWise — inteligentny asystent do faktur (MVP)
+# InvoWise
 
+**InvoWise** is a lightweight invoice helper for sole proprietors (freelancers / one-person businesses).  
+Goal: **paste or upload invoice → get clean totals and monthly insights**, without digging through PDFs and spreadsheets.
 
-## Dev quickstart
-1) Python 3.10+
-2) `make venv && export $(grep -v '^#' .env.example | xargs) && make api-deps`
-3) `cp .env.example .env`
-4) `make api` → http://localhost:8000/health
+This repo contains:
 
+- 🧠 **FastAPI backend** – parsing, storage, analytics, exports  
+- 📊 **Minimal dashboard** – KPI cards, monthly trend chart, CSV/JSON export  
+- 🧪 **Local mock mode** – demo without running the backend  
 
-Landing: open `apps/landing/index.html` in your browser (or host via GitHub Pages / Vercel).
+---
 
+## 🚀 Features (current state)
 
-## Week 1 scope
-- Local FastAPI with endpoints: /health, /invoices (CRUD mock), /upload (stub)
-- Simple in-memory storage (later S3 + Postgres)
-- Parser stub for PL invoices (regex for NIP, dates) — to be expanded
+- Upload invoice files (PDF / image / text draft)
+- Store parsed invoices locally (dev mode)
+- `/analytics` endpoint:
+  - Year-to-date totals (count, net, VAT, gross)
+  - Monthly aggregates (per `YYYY-MM`)
+- `/reports/export`:
+  - Export JSON or CSV
+  - Optional `?month=YYYY-MM` filter
+- Dashboard:
+  - KPI cards (invoices YTD, total gross, VAT)
+  - Monthly trend chart (Chart.js)
+  - Export buttons (CSV / JSON)
+  - Basic filters (`YYYY-MM`), toasts, loading states, dark mode
 
-##  Dev UI (local testing)
+---
 
-To quickly test the backend without Postman, open the lightweight HTML dev UI:
+## 🧰 Tech Stack
+
+- **Backend:** Python, FastAPI  
+- **Frontend:** Vanilla HTML / CSS / JS  
+- **Charts:** Chart.js  
+- **Storage:** simple local store (dev), CSV/JSON export  
+- **Dev UX:** Makefile targets, mock mode for the dashboard  
+
+---
+
+## ▶️ Quickstart (local dev)
+
+### 1. Backend API
+
+From repo root:
 
 ```bash
+python -m venv .venv
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+
+# Option A: using Makefile
 make api
+
+# Option B: direct
+uvicorn app.main:app --reload
 ```
 
-Then upload any .pdf, .jpg, .png, or .txt file — results are stored in-memory and visible in the table below.
+API is available at:
 
-### 🚀 Quickstart
+```
+http://127.0.0.1:8000
+```
 
-Create virtualenv and install dependencies:
+---
+
+### 2. Dashboard (apps/landing)
+
 ```bash
-python3 -m venv venv
-source venv/bin/activate
-pip install -r services/api/requirements.txt
-make api
+cd apps/landing
+make serve
+# or: python -m http.server 8080
 ```
 
-The API will run at http://127.0.0.1:8000
+Open:
 
-### 📡 API Endpoints
-
-- `GET /health` – health check  
-- `GET /invoices` – list invoices  
-- `POST /upload` – upload a file  
-- `GET /export/csv` – download all invoices as CSV  
-- `GET /version` – API version info
-- `GET /summary/{invoice_id}` – mock AI summary (category + opis)
-
-## 📊 New API Endpoints
-
-### `/analytics`
-Returns monthly aggregated totals of invoices:
-`count`, `total_net`, `total_vat`, `total_gross`, and `ytd`.
-
-### `/reports/export`
-Exports invoices in `json` or `csv` format with optional `month` parameter.
-Example:
-
-### 🧪 Dev UI
-Open: `http://127.0.0.1:8000/web/app.html`  
-Now includes quick analytics widget (refresh button).
-
-## 🧠 Analytics Endpoint (Preview)
-
-The `/analytics` endpoint provides monthly summaries of invoices based on `Invoice.totals`.
-
-Example:
-```json
-{
-  "month": "2025-10",
-  "count": 4,
-  "total_net": 400.0,
-  "total_vat": 92.0,
-  "total_gross": 492.0
-}
+```
+http://127.0.0.1:8080/app.html
 ```
 
-Notes:
+---
 
-Values are aggregated per month (YYYY-MM).
+## 🧪 Mock mode (no backend needed)
 
-If no date is present, data is grouped under "unknown".
+```bash
+cd apps/landing
+make serve
+```
 
-Response also includes a ytd (year-to-date) summary and generated_at timestamp
+Then open:
+
+```
+http://127.0.0.1:8080/app.html?mock=1
+```
+
+Mock mode uses local `mock.json`.
+
+---
+
+## 📂 Project Structure
+
+```
+.
+├── app/
+│   ├── api/
+│   │   ├── analytics.py
+│   │   └── reports.py
+│   └── main.py
+├── apps/
+│   └── landing/
+│       ├── app.html
+│       ├── dashboard.css
+│       ├── dashboard.js
+│       ├── mock.json
+│       └── README.md
+├── requirements.txt
+└── README.md
+```
+
+---
+
+## 🗺️ Roadmap
+
+### Phase 1 – Analytics (backend) ✅  
+### Phase 2 – Exporting (backend) ✅  
+### Phase 3 – Dashboard MVP (frontend) ✅  
+### Phase 4 – Enhancements (in progress)
+- [ ] Income vs expense breakdown
+- [ ] Additional KPI (costs YTD)
+- [ ] Filters for month/year presets
+- [ ] Mobile polish
+
+### Phase 5 – Integrations (planned)
+- [ ] S3 backups  
+- [ ] SES email summaries  
+- [ ] Slack notifications  
+- [ ] Multi-user mode  
+
+---
+
+## 💬 Notes
+
+This project is primarily a **learning & portfolio** app:  
+lightweight, clean, easy to extend with cloud services later.
