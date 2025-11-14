@@ -132,3 +132,8 @@
 .kpi-grid .kpi-card {
   padding: 14px 18px;
 }
+.toast.show {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity .25s ease, transform .25s ease;
+}

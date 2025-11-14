@@ -63,14 +63,16 @@ function withLoading(btn, fn) {
 function toast(msg, type = 'ok') {
   const el = document.getElementById('toast');
   if (!el) return;
+
   el.textContent = msg;
   el.className = `toast toast--${type} show`;
   el.style.display = 'block';
-  clearTimeout(el._t);
-  el._t = setTimeout(() => {
+
+  clearTimeout(el._timeout);
+  el._timeout = setTimeout(() => {
     el.classList.remove('show');
-    setTimeout(() => (el.style.display = 'none'), 300);
-  }, 2500);
+    setTimeout(() => (el.style.display = 'none'), 250);
+  }, 2400);
 }
 
 // ===============================================
