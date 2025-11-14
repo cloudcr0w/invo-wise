@@ -139,6 +139,16 @@ Mock mode uses local `mock.json`.
 
 ---
 
+---
+
+## ⚠️ Known Issues
+
+- In mock mode (`?mock=1`), the trend chart may not refresh fully on first load  
+- Safari requires a polyfill for `toLocaleString('pl-PL')`  
+- `API_BASE` in `dashboard.js` is hardcoded (future: env-based config)  
+- Downloading JSON on Firefox may trigger “open file dialog” instead of saving
+
+
 ## 💬 Notes
 
 This project is primarily a **learning & portfolio** app:  
