@@ -36,7 +36,10 @@ const filterMsg   = document.getElementById('filter-msg');
 // Chart
 let trendChart;
 
-// ========= Helpers =========
+// ===============================================
+// Helpers (formatting, loading, notifications)
+// ===============================================
+
 function numberPL(n) {
   return (n ?? 0).toLocaleString('pl-PL', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
@@ -70,7 +73,10 @@ function toast(msg, type = 'ok') {
   }, 2500);
 }
 
-// ========= API / Render =========
+// ===============================================
+// API + Rendering logic
+// ===============================================
+
 async function health() {
   try {
     const res = await fetch(`${API_BASE}/health`);
@@ -210,8 +216,10 @@ async function loadAnalytics(filter) {
     genInfo.textContent = '—';
   }
 }
+// ===============================================
+// Event bindings
+// ===============================================
 
-// ========= Actions =========
 refreshBtn.addEventListener('click', () =>
   withLoading(refreshBtn, () => loadAnalytics())
 );
@@ -288,7 +296,10 @@ applyFilter?.addEventListener('click', async () => {
   filterMsg.textContent = m ? `Zastosowano filtr dla: ${m}` : 'Wyczyszczono filtr';
 });
 
-// ========= Init =========
+// ===============================================
+// Init
+// ===============================================
+
 (async function init() {
   await health();
   await listInvoices();
