@@ -124,3 +124,11 @@
 	transform: translateY(-1px);
 	transition: 0.15s ease;
 }
+.card {
+  box-shadow: 0 2px 6px rgba(0,0,0,.08);
+  margin-bottom: 22px;
+}
+
+.kpi-grid .kpi-card {
+  padding: 14px 18px;
+}
