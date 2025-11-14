@@ -107,8 +107,9 @@
 
   <div class="card">
     <h3>Status API</h3>
-    <p id="status">Sprawdzanie…</p>
+    <p id="status" aria-live="polite">Sprawdzanie…</p>
   </div>
+
 
   <div class="card">
     <h3>Upload faktury</h3>
@@ -187,8 +188,9 @@
   <div class="card">
     <h3>📤 Eksport</h3>
     <div class="row">
-      <button id="export-btn">CSV</button>
-      <button id="export-json-btn">JSON</button>
+      <button id="export-btn" aria-label="Export CSV">Export CSV</button>
+      <button id="export-json-btn" aria-label="Export JSON">Export JSON</button>
+
       <input id="month-input" placeholder="YYYY-MM (opcjonalnie)" style="max-width:150px" />
     </div>
     <span id="export-msg" class="muted"></span>
