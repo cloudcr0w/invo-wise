@@ -137,3 +137,10 @@
   transform: translateY(0);
   transition: opacity .25s ease, transform .25s ease;
 }
+
+@media (max-width: 768px) {
+  .kpi-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
