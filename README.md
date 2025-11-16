@@ -102,20 +102,33 @@ Mock mode uses local `mock.json`.
 
 ```
 .
-├── app/
-│   ├── api/
-│   │   ├── analytics.py
-│   │   └── reports.py
-│   └── main.py
 ├── apps/
 │   └── landing/
 │       ├── app.html
 │       ├── dashboard.css
 │       ├── dashboard.js
-│       ├── mock.json
+│       ├── index.html
+│       ├── Makefile
 │       └── README.md
-├── requirements.txt
-└── README.md
+│
+├── infra/
+│   └── (future Terraform / IaC files)
+│
+├── services/
+│   ├── api/
+│   │   ├── parsers/
+│   │   │   └── (invoice parsing helpers)
+│   │   ├── tests/
+│   │   │   └── test_*.py
+│   │   ├── analytics.py        # /analytics
+│   │   ├── reports.py          # /reports/export
+│   │   ├── main.py             # FastAPI app entrypoint
+│   │   ├── models.py           # Pydantic models
+│   │   ├── storage.py          # local store loader/saver
+│   │   ├── requirements.txt
+│   │   ├── Dockerfile
+│   │   ├── README.md
+│
 ```
 
 ---
@@ -136,8 +149,6 @@ Mock mode uses local `mock.json`.
 - [ ] SES email summaries  
 - [ ] Slack notifications  
 - [ ] Multi-user mode  
-
----
 
 ---
 
