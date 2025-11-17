@@ -21,3 +21,7 @@ help:
 	@echo "  make test       Run tests (if present)"
 	@echo "  make fmt        Format code"
 	@echo "  make infra-fmt   Format Terraform modules"
+	@echo "  make infra-init   Initialize Terraform backend"
+	@echo "  make infra-plan   Show Terraform plan"
+	@echo "  make infra-apply  Apply Terraform changes"
+	@echo "  make infra-destroy Destroy Terraform resources"
