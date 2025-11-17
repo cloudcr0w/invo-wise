@@ -20,3 +20,4 @@ help:
 	@echo "  make api        Run FastAPI locally"
 	@echo "  make test       Run tests (if present)"
 	@echo "  make fmt        Format code"
+	@echo "  make infra-fmt   Format Terraform modules"
