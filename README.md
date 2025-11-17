@@ -43,21 +43,14 @@ This repo contains:
 
 ### 1. Backend API
 
-From repo root:
-
 ```bash
 python -m venv .venv
 source .venv/bin/activate  # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
-
-# Option A: using Makefile
+pip install -r services/api/requirements.txt
 make api
-
-# Option B: direct
-uvicorn app.main:app --reload
 ```
 
-API is available at:
+API runs at:
 
 ```
 http://127.0.0.1:8000
@@ -70,10 +63,9 @@ http://127.0.0.1:8000
 ```bash
 cd apps/landing
 make serve
-# or: python -m http.server 8080
 ```
 
-Open:
+Then open:
 
 ```
 http://127.0.0.1:8080/app.html
@@ -83,18 +75,9 @@ http://127.0.0.1:8080/app.html
 
 ## 🧪 Mock mode (no backend needed)
 
-```bash
-cd apps/landing
-make serve
-```
-
-Then open:
-
 ```
 http://127.0.0.1:8080/app.html?mock=1
 ```
-
-Mock mode uses local `mock.json`.
 
 ---
 
@@ -115,52 +98,43 @@ Mock mode uses local `mock.json`.
 │   └── (future Terraform / IaC files)
 │
 ├── services/
-│   ├── api/
-│   │   ├── parsers/
-│   │   │   └── (invoice parsing helpers)
-│   │   ├── tests/
-│   │   │   └── test_*.py
-│   │   ├── analytics.py        # /analytics
-│   │   ├── reports.py          # /reports/export
-│   │   ├── main.py             # FastAPI app entrypoint
-│   │   ├── models.py           # Pydantic models
-│   │   ├── storage.py          # local store loader/saver
-│   │   ├── requirements.txt
-│   │   ├── Dockerfile
-│   │   ├── README.md
+│   └── api/
+│       ├── parsers/
+│       ├── tests/
+│       ├── analytics.py
+│       ├── reports.py
+│       ├── main.py
+│       ├── models.py
+│       ├── storage.py
+│       ├── requirements.txt
+│       ├── Dockerfile
+│       ├── README.md
+│       └── __init__.py
 │
+├── .env.example
+├── .gitignore
+├── Makefile
+├── README.md
+└── tree.txt
 ```
 
 ---
 
 ## 🗺️ Roadmap
 
-### Phase 1 – Analytics (backend) ✅  
-### Phase 2 – Exporting (backend) ✅  
-### Phase 3 – Dashboard MVP (frontend) ✅  
-### Phase 4 – Enhancements (in progress)
-- [ ] Income vs expense breakdown
-- [ ] Additional KPI (costs YTD)
-- [ ] Filters for month/year presets
-- [ ] Mobile polish
-
-### Phase 5 – Integrations (planned)
-- [ ] S3 backups  
-- [ ] SES email summaries  
-- [ ] Slack notifications  
-- [ ] Multi-user mode  
+Full development roadmap:  
+👉 See **ROADMAP.md**
 
 ---
 
 ## ⚠️ Known Issues
 
-- In mock mode (`?mock=1`), the trend chart may not refresh fully on first load  
-- Safari requires a polyfill for `toLocaleString('pl-PL')`  
-- `API_BASE` in `dashboard.js` is hardcoded (future: env-based config)  
-- Downloading JSON on Firefox may trigger “open file dialog” instead of saving
+- Trend chart may not refresh fully on first mock load  
+- Safari requires polyfill for locale formatting  
+- API base is hardcoded inside dashboard.js  
 
+---
 
 ## 💬 Notes
 
-This project is primarily a **learning & portfolio** app:  
-lightweight, clean, easy to extend with cloud services later.
+This project is a learning & portfolio app designed to be easy to extend later.
