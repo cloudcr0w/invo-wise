@@ -23,7 +23,7 @@ variable "enable_backend" {
 }
 
 variable "common_tags" {
-  type = map(string)
+  type        = map(string)
   description = "Base tags applied to all InvoWise infrastructure resources"
 
   default = {
