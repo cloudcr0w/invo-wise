@@ -52,11 +52,4 @@ locals {
 #   enabled = var.enable_backend
 # }
 
-###############################################################################
-# Outputs (empty for now)
-###############################################################################
 
-output "invo_wise_environment" {
-  value       = local.environment
-  description = "Current selected environment for the infrastructure."
-}
