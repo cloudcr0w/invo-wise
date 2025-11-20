@@ -3,8 +3,7 @@
 # Basic main.tf – safe, expandable, no-cost default configuration
 ###############################################################################
 
-terraform {
-  required_version = ">= 1.6.0"
+
 
   required_providers {
     aws = {
@@ -15,11 +14,9 @@ terraform {
 
   # Backend will be enabled later (Phase 5)
   # backend "s3" {}
-}
 
-provider "aws" {
-  region = var.aws_region
-}
+
+
 
 ###############################################################################
 # Locals
