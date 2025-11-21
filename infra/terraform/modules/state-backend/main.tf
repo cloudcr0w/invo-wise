@@ -14,6 +14,15 @@ terraform {
   required_version = ">= 1.6.0"
 }
 
+locals {
+  combined_tags = merge(
+    var.tags,
+    {
+      Module = "state-backend"
+    }
+  )
+}
+
 # Example (to be implemented later):
 #
 # resource "aws_s3_bucket" "tf_state" {
