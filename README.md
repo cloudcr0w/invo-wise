@@ -119,6 +119,20 @@ http://127.0.0.1:8080/app.html?mock=1
 ```
 
 ---
+## 🏗️ Infrastructure (Terraform)
+
+Infrastructure-as-Code for InvoWise lives under:
+
+infra/terraform
+
+
+This includes:
+- root Terraform module (`main.tf`, `providers.tf`, `outputs.tf`)
+- skeleton module for future S3/DynamoDB backend (`modules/state-backend/`)
+- example locals and variable definitions
+
+🟢 The infrastructure is not active yet, but will be expanded during Phase 5.
+
 
 ## 🗺️ Roadmap
 
