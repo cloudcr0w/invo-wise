@@ -53,3 +53,12 @@ locals {
 # }
 
 
+# TODO: wire up state-backend module once backend resources are enabled
+#
+# module "state_backend" {
+#   source       = "./modules/state-backend"
+#   project_name = local.project
+#   environment  = local.environment
+#   tags         = local.tags
+#   # enabled only when backend is planned for deployment
+# }
