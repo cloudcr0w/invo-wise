@@ -1,0 +1,6 @@
+# Example configuration for InvoWise Terraform
+
+project_name   = "invo-wise"
+environment    = "dev"
+aws_region     = "eu-central-1"
+enable_backend = false
