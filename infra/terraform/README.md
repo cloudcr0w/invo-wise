@@ -63,6 +63,17 @@ For locking + (optional) storing invoice metadata in the future.
 
 To allow API or scheduled tasks to upload analytics reports to S3.
 
+### 5. Terraform Modules
+
+This folder contains all reusable Terraform modules used by InvoWise.
+
+Currently includes:
+
+- `state-backend/` – future S3 + DynamoDB backend for Terraform state
+
+New modules will be added as infrastructure grows in Phase 5.
+
+
 ### 📝 Notes
 
 This module is intentionally minimal — the application is still in local/dev mode.
