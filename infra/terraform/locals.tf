@@ -1,5 +1,6 @@
 ###############################################################################
-# Additional computed values for future use
+# Root locals
+# Additional computed values for infra-wide usage (naming, tagging, env logic)
 ###############################################################################
 
 locals {
