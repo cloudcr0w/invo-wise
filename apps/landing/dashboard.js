@@ -36,6 +36,9 @@ const filterMsg = document.getElementById('filter-msg')
 // Chart
 let trendChart
 
+// Build timestamp injected manually for debugging
+console.log("InvoWise Dashboard Build:", new Date().toISOString());
+
 // ===============================================
 // Helpers (formatting, loading, notifications)
 // ===============================================
