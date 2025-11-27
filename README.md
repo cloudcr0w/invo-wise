@@ -1,3 +1,6 @@
+![Status](https://img.shields.io/badge/InvoWise-DevBuild-blue?style=flat-square)
+
+
 # InvoWise
 
 **InvoWise** is a lightweight invoice helper for sole proprietors (freelancers / one-person businesses).  
