@@ -91,4 +91,4 @@ Kolejny krok: dodać Invoice.type (income|expense) i rozszerzyć /analytics o br
 
 ---
 
-📌 **Goal:** deliver a functional analytics dashboard with export capabilities by **mid-November 2025**.
+📌 **Goal:** deliver a functional analytics dashboard with export capabilities by ** will see... **
