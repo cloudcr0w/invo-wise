@@ -1,0 +1,31 @@
+---
+- name: Prepare InvoWise API environment
+  hosts: invowise_api
+  become: true
+
+  vars:
+    invowise_app_dir: /opt/invowise
+
+  tasks:
+    - name: Ensure application directory exists
+      file:
+        path: "{{ invowise_app_dir }}"
+        state: directory
+        mode: "0755"
+
+    - name: Install Python and pip
+      package:
+        name:
+          - python3
+          - python3-pip
+        state: present
+
+    - name: Ensure virtualenv is installed
+      pip:
+        name: virtualenv
+        executable: pip3
+
+    - name: Create virtualenv for InvoWise API
+      command: virtualenv {{ invowise_app_dir }}/venv
+      args:
+        creates: "{{ invowise_app_dir }}/venv"
