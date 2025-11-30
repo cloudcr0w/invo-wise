@@ -1,3 +1,8 @@
+# CI workflow for InvoWise
+# - Triggers on pushes to main and all pull requests
+# - Sets up Python 3.11 and installs Ruff + Black
+# - Runs style checks for services/api
+# - For now the job is non-blocking: black/ruff use `|| true`, so pipeline only reports issues
 name: ci
 on:
   push:
