@@ -45,6 +45,9 @@ This document contains the **full development roadmap** for the InvoWise project
 - expand analytics JSON
 - add settings endpoint
 - add tests
+- validate Invoice.type to avoid unknown or missing categories
+- decide on default type for legacy invoices (e.g. "income")
+- document new analytics fields (incomeTotal, expenseTotal, netProfit, costYTD)
 
 ### Frontend
 - support new analytics JSON
