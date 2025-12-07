@@ -84,6 +84,17 @@ http://127.0.0.1:8080/app.html?mock=1
 
 ---
 
+## 🐳 Run with Docker
+
+```bash
+docker compose up --build
+```
+
+The backend will be available on http://localhost:8000
+ (temporary test entrypoint).
+
+ 
+
 ## 📂 Project Structure
 
 ```
