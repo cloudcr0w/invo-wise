@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field
 from typing import List, Optional
 from datetime import date
+from typing import List, Optional, Literal
 
 
 class Party(BaseModel):
@@ -36,6 +37,7 @@ class Invoice(BaseModel):
     invoice_id: str
     owner_id: str
     source: str = Field(default="upload", description="upload|email")
+    type: Literal["income", "expense"] = "expense"
     file_uri: Optional[str] = None
     issuer: Party = Party()
     buyer: Party = Party()
