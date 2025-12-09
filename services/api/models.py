@@ -49,5 +49,6 @@ class Invoice(BaseModel):
     totals: Optional[Totals] = None
     payment: Payment = Payment()
     tags: List[str] = []
+    category: Optional[str] = None
     status: str = "parsed"  # parsed|needs_review|confirmed|exported
     confidence: float = 0.0
