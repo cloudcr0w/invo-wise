@@ -2,6 +2,7 @@ from pydantic import BaseModel, Field
 from typing import List, Optional
 from datetime import date
 from typing import List, Optional, Literal
+from pydantic import validator
 
 
 class Party(BaseModel):
@@ -20,6 +21,12 @@ class Item(BaseModel):
     gross: float
     category: Optional[str] = None
 
+@validator("vat_rate")
+def validate_vat_rate(cls, value):
+        allowed = {"0%", "5%", "8%", "23%"}
+        if value not in allowed:
+            raise ValueError(f"Unsupported VAT rate: {value}")
+        return value
 
 class Totals(BaseModel):
     net: float
