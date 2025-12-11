@@ -32,6 +32,8 @@ class Totals(BaseModel):
     net: float
     vat: float
     gross: float
+    vat_amount_total: Optional[float] = None
+
 
 
 class Payment(BaseModel):
