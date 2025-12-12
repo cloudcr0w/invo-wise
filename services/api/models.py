@@ -35,6 +35,15 @@ def validate_dates(self):
         raise ValueError("issue_date cannot be later than due_date")
     return self
 
+@field_validator("nip")
+def validate_nip(cls, value):
+    if not value:
+        return value
+    digits = "".join(filter(str.isdigit, value))
+    if len(digits) != 10:
+        raise ValueError("NIP must contain exactly 10 digits")
+    return value
+
 class Totals(BaseModel):
     net: float
     vat: float
