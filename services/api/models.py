@@ -2,7 +2,8 @@ from pydantic import BaseModel, Field
 from typing import List, Optional
 from datetime import date
 from typing import List, Optional, Literal
-from pydantic import validator
+from pydantic import field_validator, model_validator
+
 
 
 class Party(BaseModel):
@@ -21,12 +22,18 @@ class Item(BaseModel):
     gross: float
     category: Optional[str] = None
 
-@validator("vat_rate")
+@field_validator("vat_rate")
 def validate_vat_rate(cls, value):
         allowed = {"0%", "5%", "8%", "23%"}
         if value not in allowed:
             raise ValueError(f"Unsupported VAT rate: {value}")
         return value
+    
+@model_validator(mode="after")
+def validate_dates(self):
+    if self.issue_date and self.due_date and self.issue_date > self.due_date:
+        raise ValueError("issue_date cannot be later than due_date")
+    return self
 
 class Totals(BaseModel):
     net: float
