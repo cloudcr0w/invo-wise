@@ -77,3 +77,5 @@ class Invoice(BaseModel):
     category: Optional[str] = None
     status: str = "parsed"  # parsed|needs_review|confirmed|exported
     confidence: float = 0.0
+    normalized_invoice_no: Optional[str] = None
+
