@@ -48,3 +48,30 @@ class Payment(BaseModel):
     iban: Optional[str] = None
     paid: bool = False
 
+class Invoice(BaseModel):
+    invoice_id: str
+    owner_id: str
+    source: str = Field(default="upload", description="upload|email")
+    type: Literal["income", "expense"] = "expense"
+    file_uri: Optional[str] = None
+    issuer: Party = Party()
+    buyer: Party = Party()
+    invoice_no: Optional[str] = None
+    issue_date: Optional[date] = None
+    due_date: Optional[date] = None
+    currency: str = "PLN"
+    items: List[Item] = []
+    totals: Optional[Totals] = None
+    payment: Payment = Payment()
+    tags: List[str] = []
+    category: Optional[str] = None
+    status: str = "parsed"  # parsed|needs_review|confirmed|exported
+    confidence: float = 0.0
+    normalized_invoice_no: Optional[str] = None
+
+    @model_validator(mode="after")
+    def validate_dates(self):
+        if self.issue_date and self.due_date and self.issue_date > self.due_date:
+            raise ValueError("issue_date cannot be later than due_date")
+        return self
+    
