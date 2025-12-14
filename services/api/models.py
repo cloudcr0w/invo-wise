@@ -5,6 +5,8 @@ from pydantic import BaseModel, Field, field_validator, model_validator
 
 
 class Party(BaseModel):
+     """Represents issuer or buyer information of an invoice."""
+     
     name: Optional[str] = None
     nip: Optional[str] = None
     address: Optional[str] = None
@@ -20,6 +22,8 @@ class Party(BaseModel):
 
 
 class Item(BaseModel):
+     """Represents a single invoice item (product/service)."""
+     
     name: str
     qty: float = 1
     unit: str = "szt"
@@ -37,6 +41,8 @@ class Item(BaseModel):
         return value
     
     class Totals(BaseModel):
+        """Aggregated totals of an invoice."""
+        
     net: float
     vat: float
     gross: float
@@ -44,11 +50,15 @@ class Item(BaseModel):
 
 
 class Payment(BaseModel):
+    """Payment information for the invoice."""
+    
     method: Optional[str] = None
     iban: Optional[str] = None
     paid: bool = False
 
 class Invoice(BaseModel):
+    """Full invoice representation parsed by the system."""
+    
     invoice_id: str
     owner_id: str
     source: str = Field(default="upload", description="upload|email")
