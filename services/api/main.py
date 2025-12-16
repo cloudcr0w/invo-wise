@@ -22,6 +22,8 @@ from .models import Invoice, Item, Totals
 from .storage import save_invoice, list_invoices, get_invoice, delete_invoice
 from .parsers.pl_invoice import parse_text_to_fields
 
+from services.api.routes import health as health_routes
+
 # --- LOGOWANIE GLOBALNE ---
 logging.basicConfig(
     level=logging.INFO,
@@ -334,3 +336,5 @@ async def invoice_summary(invoice_id: str):
         "summary": summary,
         "confidence": getattr(inv, "confidence", 0.0),
     }
+    
+app.include_router(health_routes.router)
