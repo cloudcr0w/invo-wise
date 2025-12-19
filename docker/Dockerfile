@@ -1,4 +1,4 @@
-# InvoWise backend Docker image - initial scaffold
+# InvoWise backend Docker image
 FROM python:3.11-slim
 
 WORKDIR /app
@@ -6,10 +6,13 @@ WORKDIR /app
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
-COPY requirements.txt /app/requirements.txt
-RUN pip install --no-cache-dir -r /app/requirements.txt
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-ENV APP_PORT=8000
+COPY . .
 
-# TODO: replace with proper app entrypoint (e.g. uvicorn main:app --host 0.0.0.0 --port 8000)
-CMD ["python", "-m", "http.server", "${APP_PORT}"]
+# Default port for the backend (FastAPI planned)
+EXPOSE 8000
+
+# Temporary placeholder command (API entrypoint will replace this later)
+CMD ["python", "-m", "http.server", "8000"]
