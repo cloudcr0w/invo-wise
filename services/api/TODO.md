@@ -81,13 +81,13 @@ GET /reports/export?month=2025-09&format=csv
 ---
 ## ✅ Progress Log (2025-11-10)
 
-Dodano KPI (YTD): count, total_gross, total_vat
+Added KPIs (YTD): count, total_gross, total_vat
 
-Dodano wykres trendu (Chart.js) na podstawie /analytics
+Added trend chart (Chart.js) based on /analytics
 
-Podpięto eksport CSV/JSON + drobne UX/loader’y
+Connected CSV/JSON export + minor UX/loaders
 
-Kolejny krok: dodać Invoice.type (income|expense) i rozszerzyć /analytics o breakdown; potem drugi dataset na wykresie i dodatkowe KPI
+Next step: add Invoice.type (income|expense) and extend /analytics with breakdown; then a second dataset on the chart and additional KPIs
 
 ---
 
